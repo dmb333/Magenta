@@ -1451,7 +1451,10 @@ mm.add({
       scrollTrigger:{
         trigger:sec, start:"top top",
         end: mobile ? "+=46%" : "+=42%",
-        pin:true, scrub:0.22, anticipatePin:1,
+        pin:true,
+        pinSpacing:false,
+        scrub:0.22,
+        anticipatePin:1,
         invalidateOnRefresh:true
       }
     });
@@ -1481,9 +1484,11 @@ mm.add({
 
     tl.to(bodyCopy,{y:0,opacity:1,duration:.11,ease:"power2.out"},.25);
 
-    /* Hold briefly, then clear the section for the next centered title. */
-    tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},.68)
-      .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.15,ease:"power2.in"},.68);
+    /* Hold the completed section almost to the handoff. With pin spacing
+       removed, the next title begins entering after roughly one natural
+       viewport instead of several extra scroll gestures. */
+    tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},.82)
+      .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.15,ease:"power2.in"},.82);
 
     /* the channel: laid-back giant letter drifts slower than scroll */
     gsap.fromTo(depth,
