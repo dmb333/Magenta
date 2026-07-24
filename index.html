@@ -1324,6 +1324,16 @@ footer{
 .sec-copy .eyebrow-slot{order:0;}
 .sec-copy p{order:1;}
 
+/* The last chapter switches to its real in-flow title on large desktop
+   screens. Keep that title as a normal flex item above the paragraph. */
+@media (min-width:1600px) and (min-height:900px){
+  .sec-copy .eyebrow-slot.is-divisions{
+    position:relative;
+    flex:0 0 auto;
+    transform:none !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2030,6 +2040,11 @@ mm.add({
       return y;
     };
     const isDivisionsTitle = titleSlot.classList.contains("is-divisions");
+    /* On very large desktop viewports, use the real title slot for the final
+       settled state of the last chapter. This keeps the title and paragraph
+       in the same flex layout, so they cannot overlap regardless of monitor
+       resolution, macOS display scaling, or browser font metrics. */
+    const useDivisionsLockup = largeDesktop && isDivisionsTitle;
     const titleTargetScale = ()=>{
       const small = parseFloat(getComputedStyle(titleSlot).fontSize) || 14;
       const large = parseFloat(getComputedStyle(title).fontSize) || 72;
@@ -2055,6 +2070,9 @@ mm.add({
     gsap.set(copy,{y:largeDesktopCopyOffset});
     gsap.set(bodyCopy,{opacity:0,y:24});
     gsap.set(title,{x:0,y:0,scale:1,opacity:1});
+    if(useDivisionsLockup){
+      gsap.set(titleSlot,{visibility:"visible",opacity:0});
+    }
 
     const tl = gsap.timeline({
       scrollTrigger:{
@@ -2095,13 +2113,21 @@ mm.add({
       .to(b,{x:mobile?0:"-3vw",y:0,rotation:0,scale:1.12,duration:mobile ? .34 : .25,ease:"power2.in"},mobile ? .12 : .08)
       .to(b,{x:0,scale:1,duration:.08,ease:"power3.out"},mobile ? .46 : .33);
 
+    /* The final chapter uses its actual in-flow title once the large morph
+       reaches the lockup. That preserves the exact flex gap above the copy. */
+    if(useDivisionsLockup){
+      tl.to(title,{opacity:0,duration:.045,ease:"none"},.245)
+        .to(titleSlot,{opacity:1,duration:.045,ease:"none"},.245);
+    }
+
     tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},mobile ? .34 : .25);
 
     /* Hold the completed section almost to the handoff. The following
        section is pulled upward in CSS so its title begins entering after
        roughly half the former post-section gap. */
     const handoffAt = mobile ? (i === SECTIONS.length - 1 ? .93 : .89) : (i === SECTIONS.length - 1 ? .88 : .82);
-    tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},handoffAt)
+    const outgoingCopy = useDivisionsLockup ? [bodyCopy,title,titleSlot] : [bodyCopy,title];
+    tl.to(outgoingCopy,{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},handoffAt)
       .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.12,ease:"power2.in"},handoffAt);
 
     /* the channel: laid-back giant letter drifts slower than scroll */
