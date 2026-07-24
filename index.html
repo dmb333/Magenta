@@ -1250,6 +1250,39 @@ footer{
     backface-visibility:hidden;
   }
 }
+
+
+/* ---------- mobile persistent navigation + below-header centering ---------- */
+@media (max-width:768px){
+  :root{--mobile-nav-reserve:72px;}
+
+  /* Keep the site navigation visible above every sticky chapter stage. */
+  nav{
+    position:fixed !important;
+    top:0 !important;
+    left:0 !important;
+    right:0 !important;
+    z-index:300 !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    display:flex !important;
+    mix-blend-mode:normal !important;
+    transform:none !important;
+    pointer-events:auto !important;
+  }
+
+  /* Center the complete lockup in the usable screen below the fixed menu. */
+  .glyph,
+  .rm .glyph.r,
+  .section-title-morph{
+    top:calc(50% + (var(--mobile-nav-reserve) / 2)) !important;
+  }
+  .sec-copy{
+    top:var(--mobile-nav-reserve) !important;
+    bottom:0 !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1891,6 +1924,10 @@ mm.add({
 },(ctx)=>{
   const {full, mobile, reduced} = ctx.conditions;
 
+  if(mobile){
+    gsap.set("nav",{opacity:1,visibility:"visible",clearProps:"transform"});
+  }
+
   if(reduced){ document.body.classList.add("rm"); return; }
 
   /* hero intro — quick, skippable */
@@ -1921,6 +1958,14 @@ mm.add({
     const titleSlot = sec.querySelector(".eyebrow-slot");
     const scaleIn = mobile ? 1.6 : 2.6;
 
+    /* Extra breathing room on large desktop displays. The complete copy
+       lockup sits slightly lower inside the letter, while smaller desktop,
+       tablet, and mobile layouts remain exactly as before. */
+    const largeDesktop = !mobile && window.matchMedia("(min-width: 1600px) and (min-height: 900px)").matches;
+    const largeDesktopCopyOffset = largeDesktop
+      ? Math.max(28, Math.min(46, window.innerHeight * 0.03))
+      : 0;
+
     /* Local coordinates keep the title-to-eyebrow move accurate even before
        the section has entered the viewport or after the browser resizes. */
     const centerInsideStage = (el)=>{
@@ -1934,14 +1979,15 @@ mm.add({
       }
       return {x,y};
     };
-    const titleTargetX = ()=>centerInsideStage(titleSlot).x - stage.clientWidth / 2;
-    const titleTargetY = ()=>centerInsideStage(titleSlot).y - stage.clientHeight / 2;
+    const titleTargetX = ()=>centerInsideStage(titleSlot).x - title.offsetLeft;
+    const titleTargetY = ()=>centerInsideStage(titleSlot).y - title.offsetTop + largeDesktopCopyOffset;
     const titleTargetScale = ()=>{
       const small = parseFloat(getComputedStyle(titleSlot).fontSize) || 14;
       const large = parseFloat(getComputedStyle(title).fontSize) || 72;
       return small / large;
     };
 
+    gsap.set(copy,{y:largeDesktopCopyOffset});
     gsap.set(bodyCopy,{opacity:0,y:24});
     gsap.set(title,{x:0,y:0,scale:1,opacity:1});
 
