@@ -90,11 +90,11 @@ nav{
 #ov-team{
   justify-content:flex-start;
   align-items:stretch;
-  padding:96px 5vw 64px;
+  padding:12px 5vw 64px;
   overflow-y:auto;
   overscroll-behavior:contain;
 }
-#ov-team .close{position:fixed;z-index:2}
+#ov-team .close{position:fixed;top:16px;z-index:2}
 .team-shell{width:100%;max-width:1600px;margin:0 auto}
 .team-intro{
   display:flex;
@@ -111,7 +111,7 @@ nav{
   text-transform:uppercase;
 }
 #ov-team .team-intro p{
-  margin:0 0 8px;
+  margin:0 125px 8px 0;
   max-width:42ch;
   font-family:Helvetica,Arial,sans-serif;
   color:var(--dim);
@@ -315,6 +315,8 @@ nav{
 }
 .team-bio-copy p:last-child{margin-bottom:0}
 @media (max-width:980px){
+  #ov-team{padding-top:72px}
+  #ov-team .team-intro p{margin-right:0}
   .team-intro{align-items:flex-start;flex-direction:column;margin-bottom:34px}
   .team-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
