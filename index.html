@@ -451,6 +451,7 @@ nav{
 .full-logo-interstitial{
   position:relative;
   z-index:40;
+  clear:both;
   width:100%;
   min-height:0;
   aspect-ratio:1600 / 700;
@@ -577,6 +578,20 @@ nav{
   font-size:clamp(30px,4.6vw,78px);
   letter-spacing:.18em;
 }
+/* The final two chapter titles are substantially longer. Keep them elegant
+   and contained rather than letting them span or crowd the viewport. */
+.section-title-morph.is-building{
+  max-width:88vw;
+  font-size:clamp(28px,3.25vw,58px);
+  letter-spacing:.15em;
+  line-height:1.05;
+}
+.section-title-morph.is-divisions{
+  max-width:84vw;
+  font-size:clamp(22px,2.45vw,44px);
+  letter-spacing:.12em;
+  line-height:1.08;
+}
 .sec-copy .eyebrow-slot{
   font-family:Helvetica,Arial,sans-serif;
   font-size:clamp(12px,1vw,16px);
@@ -587,6 +602,18 @@ nav{
   margin-bottom:22px;
   font-weight:700;
   visibility:hidden;
+}
+.sec-copy .eyebrow-slot.is-building{
+  font-size:clamp(11px,.82vw,14px);
+  letter-spacing:.30em;
+  margin-bottom:28px;
+}
+.sec-copy .eyebrow-slot.is-divisions{
+  max-width:90vw;
+  font-size:clamp(10px,.72vw,12px);
+  letter-spacing:.24em;
+  line-height:1.2;
+  margin-bottom:38px;
 }
 @media (max-width:768px){
   .section-title-morph{
@@ -600,9 +627,28 @@ nav{
     font-size:clamp(25px,7.2vw,48px);
     letter-spacing:.13em;
   }
+  .section-title-morph.is-building{
+    font-size:clamp(24px,6.5vw,40px);
+    letter-spacing:.12em;
+  }
+  .section-title-morph.is-divisions{
+    max-width:86vw;
+    font-size:clamp(20px,5.4vw,34px);
+    letter-spacing:.09em;
+  }
   .sec-copy .eyebrow-slot{
     margin-bottom:16px;
     font-size:clamp(11px,3vw,14px);
+  }
+  .sec-copy .eyebrow-slot.is-building{
+    font-size:clamp(10px,2.65vw,13px);
+    letter-spacing:.24em;
+    margin-bottom:22px;
+  }
+  .sec-copy .eyebrow-slot.is-divisions{
+    font-size:clamp(9px,2.35vw,12px);
+    letter-spacing:.16em;
+    margin-bottom:30px;
   }
 }
 @media (prefers-reduced-motion:reduce){
@@ -1567,6 +1613,7 @@ const main = document.getElementById("story");
 SECTIONS.forEach((s,i)=>{
   const sec = document.createElement("section");
   const longTitle = s.eyebrow.length > 20 ? " is-long" : "";
+  const finalTitleClass = s.asset === "T" ? " is-building" : (s.asset === "A2" ? " is-divisions" : "");
   sec.className = "letter-section";
   sec.setAttribute("aria-label", s.eyebrow);
   sec.innerHTML = `
@@ -1579,10 +1626,10 @@ SECTIONS.forEach((s,i)=>{
       <div class="glyph b lm-${s.asset}" aria-hidden="true"></div>
     </div>
     <div class="sec-copy">
-      <span class="eyebrow-slot" aria-hidden="true">${s.eyebrow}</span>
+      <span class="eyebrow-slot${finalTitleClass}" aria-hidden="true">${s.eyebrow}</span>
       <p>${s.copy}</p>
     </div>
-    <div class="section-title-morph${longTitle}" aria-hidden="true">${s.eyebrow}</div>`;
+    <div class="section-title-morph${longTitle}${finalTitleClass}" aria-hidden="true">${s.eyebrow}</div>`;
   main.appendChild(sec);
 });
 
@@ -1782,7 +1829,7 @@ mm.add({
         trigger:sec, start:"top top",
         end: mobile ? "+=46%" : "+=42%",
         pin:true,
-        pinSpacing:false,
+        pinSpacing:i === SECTIONS.length - 1,
         scrub:0.22,
         anticipatePin:1,
         invalidateOnRefresh:true,
@@ -1819,8 +1866,9 @@ mm.add({
     /* Hold the completed section almost to the handoff. The following
        section is pulled upward in CSS so its title begins entering after
        roughly half the former post-section gap. */
-    tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},.82)
-      .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.15,ease:"power2.in"},.82);
+    const handoffAt = i === SECTIONS.length - 1 ? .88 : .82;
+    tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},handoffAt)
+      .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.12,ease:"power2.in"},handoffAt);
 
     /* the channel: laid-back giant letter drifts slower than scroll */
     gsap.fromTo(depth,
