@@ -1138,6 +1138,63 @@ footer{
   }
 }
 
+
+
+/* ---------- uniform centered chapter-title sizing ---------- */
+/* All large chapter titles now share one consistent scale and centered layout. */
+.section-title-morph,
+.section-title-morph.is-long,
+.section-title-morph.is-building,
+.section-title-morph.is-divisions{
+  left:50% !important;
+  right:auto !important;
+  width:min(92vw,1500px) !important;
+  max-width:min(92vw,1500px) !important;
+  text-align:center !important;
+  white-space:normal !important;
+  font-size:clamp(34px,5.2vw,84px) !important;
+  line-height:1.04 !important;
+  letter-spacing:.16em !important;
+}
+
+/* Keep the docked eyebrow treatment consistent for every chapter as well. */
+.sec-copy .eyebrow-slot,
+.sec-copy .eyebrow-slot.is-building,
+.sec-copy .eyebrow-slot.is-divisions{
+  width:min(92vw,1100px) !important;
+  max-width:min(92vw,1100px) !important;
+  text-align:center !important;
+  white-space:normal !important;
+  font-size:clamp(12px,1vw,16px) !important;
+  line-height:1.18 !important;
+  letter-spacing:.30em !important;
+  margin-bottom:22px !important;
+}
+
+@media (max-width:768px){
+  .section-title-morph,
+  .section-title-morph.is-long,
+  .section-title-morph.is-building,
+  .section-title-morph.is-divisions{
+    width:90vw !important;
+    max-width:90vw !important;
+    font-size:clamp(28px,8vw,52px) !important;
+    line-height:1.05 !important;
+    letter-spacing:.12em !important;
+  }
+
+  .sec-copy .eyebrow-slot,
+  .sec-copy .eyebrow-slot.is-building,
+  .sec-copy .eyebrow-slot.is-divisions{
+    width:90vw !important;
+    max-width:90vw !important;
+    font-size:clamp(10px,2.7vw,13px) !important;
+    line-height:1.18 !important;
+    letter-spacing:.20em !important;
+    margin-bottom:18px !important;
+  }
+}
+
 </style>
 </head>
 <body>
