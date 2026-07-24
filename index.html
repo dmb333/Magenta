@@ -1284,6 +1284,40 @@ footer{
   }
 }
 
+
+
+/* ---------- shared chapter-title/body spacing ---------- */
+/*
+   The settled chapter title and paragraph now use one flex lockup. The hidden
+   title slot reserves the title's real line box, and `gap` controls the space
+   below it. This keeps the relationship stable across high-resolution and
+   large "More Space" desktop viewports instead of scaling the title and body
+   independently.
+*/
+.sec-copy{
+  --chapter-title-body-gap:22px;
+  row-gap:var(--chapter-title-body-gap);
+}
+.sec-copy .eyebrow-slot,
+.sec-copy .eyebrow-slot.is-building,
+.sec-copy .eyebrow-slot.is-divisions{
+  margin-bottom:0 !important;
+}
+
+/* Large desktop / 4K–5K displays need proportionally more breathing room. */
+@media (min-width:1600px) and (min-height:900px){
+  .sec-copy{
+    --chapter-title-body-gap:clamp(34px,3.2vh,54px);
+  }
+}
+
+/* Preserve the compact spacing that already works well on mobile. */
+@media (max-width:768px){
+  .sec-copy{
+    --chapter-title-body-gap:18px;
+  }
+}
+
 </style>
 </head>
 <body>
