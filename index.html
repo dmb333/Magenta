@@ -1172,6 +1172,11 @@ footer{
 }
 
 @media (max-width:768px){
+  .section-title-morph{
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    transform-style:preserve-3d;
+  }
   .section-title-morph,
   .section-title-morph.is-long,
   .section-title-morph.is-building,
@@ -1222,7 +1227,7 @@ footer{
   <div class="team-shell">
     <div class="team-intro">
       <h2>Team</h2>
-      <p>Directors, producers, and creative leads combining decades of production experience with the tools shaping what comes next.</p>
+      <p>Entrepreneurs, directors, producers, and creative leads who have spent decades shaping culture in their own lanes, now building it together.</p>
     </div>
     <div class="team-grid">
       <article class="team-card">
@@ -1615,6 +1620,10 @@ footer{
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
+/* Keep mobile browser chrome changes from forcing a mid-scroll refresh.
+   This prevents the morphing chapter title from jumping on iOS/Android. */
+ScrollTrigger.config({ignoreMobileResize:true});
+
 /* ---------------- section data ----------------
    Letters travel a full arc: enter huge from off-screen, overshoot,
    merge, hold for copy, then exit off-screen as the pin releases.
@@ -1886,10 +1895,10 @@ mm.add({
     const tl = gsap.timeline({
       scrollTrigger:{
         trigger:sec, start:"top top",
-        end: mobile ? "+=46%" : "+=42%",
+        end: mobile ? "+=82%" : "+=42%",
         pin:true,
         pinSpacing:i === SECTIONS.length - 1,
-        scrub:0.22,
+        scrub:mobile ? 0.7 : 0.22,
         anticipatePin:1,
         invalidateOnRefresh:true,
         onToggle:self=>sec.classList.toggle("is-active-section", self.isActive),
@@ -1904,28 +1913,29 @@ mm.add({
       y:titleTargetY,
       scale:titleTargetScale,
       letterSpacing:()=>getComputedStyle(titleSlot).letterSpacing,
-      duration:.28,
-      ease:"power2.inOut"
+      duration:mobile ? .52 : .28,
+      ease:"power2.inOut",
+      force3D:true
     },0);
 
     /* The letter and the body rise behind the shrinking title. */
     tl.fromTo(r,
       {xPercent:-50,yPercent:-50,x:v.r.x,y:v.r.y,rotation:v.r.rot,scale:scaleIn,opacity:0},
-      {opacity:.58,duration:.04,ease:"none"},.08)
-      .to(r,{x:mobile?0:"3vw",y:0,rotation:0,scale:1.12,duration:.25,ease:"power2.in"},.08)
-      .to(r,{x:0,scale:1,duration:.07,ease:"power3.out"},.33);
+      {opacity:.58,duration:.04,ease:"none"},mobile ? .12 : .08)
+      .to(r,{x:mobile?0:"3vw",y:0,rotation:0,scale:1.12,duration:mobile ? .34 : .25,ease:"power2.in"},mobile ? .12 : .08)
+      .to(r,{x:0,scale:1,duration:.08,ease:"power3.out"},mobile ? .46 : .33);
     tl.fromTo(b,
       {xPercent:-50,yPercent:-50,x:v.b.x,y:v.b.y,rotation:v.b.rot,scale:scaleIn,opacity:0},
-      {opacity:.58,duration:.04,ease:"none"},.08)
-      .to(b,{x:mobile?0:"-3vw",y:0,rotation:0,scale:1.12,duration:.25,ease:"power2.in"},.08)
-      .to(b,{x:0,scale:1,duration:.07,ease:"power3.out"},.33);
+      {opacity:.58,duration:.04,ease:"none"},mobile ? .12 : .08)
+      .to(b,{x:mobile?0:"-3vw",y:0,rotation:0,scale:1.12,duration:mobile ? .34 : .25,ease:"power2.in"},mobile ? .12 : .08)
+      .to(b,{x:0,scale:1,duration:.08,ease:"power3.out"},mobile ? .46 : .33);
 
-    tl.to(bodyCopy,{y:0,opacity:1,duration:.11,ease:"power2.out"},.25);
+    tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},mobile ? .34 : .25);
 
     /* Hold the completed section almost to the handoff. The following
        section is pulled upward in CSS so its title begins entering after
        roughly half the former post-section gap. */
-    const handoffAt = i === SECTIONS.length - 1 ? .88 : .82;
+    const handoffAt = mobile ? (i === SECTIONS.length - 1 ? .93 : .89) : (i === SECTIONS.length - 1 ? .88 : .82);
     tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},handoffAt)
       .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.12,ease:"power2.in"},handoffAt);
 
