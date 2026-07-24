@@ -298,6 +298,23 @@ nav{
   .full-logo-interstitial img{width:140vw}
 }
 
+
+
+/* ---------- tighter handoff to the next section title ---------- */
+/*
+   The pinned animation finishes before the section's full document height.
+   Pulling the following section upward removes roughly half of the remaining
+   black scroll gap while preserving a full-screen canvas during the animation.
+*/
+.letter-section:not(:last-child){
+  margin-bottom:-30vh;
+}
+@media (max-width:768px){
+  .letter-section:not(:last-child){
+    margin-bottom:-30svh;
+  }
+}
+
 /* ---------- divisions ---------- */
 .divisions{
   position:relative;
@@ -1484,9 +1501,9 @@ mm.add({
 
     tl.to(bodyCopy,{y:0,opacity:1,duration:.11,ease:"power2.out"},.25);
 
-    /* Hold the completed section almost to the handoff. With pin spacing
-       removed, the next title begins entering after roughly one natural
-       viewport instead of several extra scroll gestures. */
+    /* Hold the completed section almost to the handoff. The following
+       section is pulled upward in CSS so its title begins entering after
+       roughly half the former post-section gap. */
     tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},.82)
       .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.15,ease:"power2.in"},.82);
 
