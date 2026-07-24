@@ -333,16 +333,22 @@ nav{
 
 /* ---------- letter sections ---------- */
 .letter-section{
-  position:relative;height:100vh;overflow:hidden;background:var(--black);
+  position:relative;height:100vh;overflow:hidden;background:transparent;
   perspective:900px;
   isolation:isolate;
   z-index:1;
 }
-/* Keep the section currently being pinned above the next section that has
-   been pulled upward for the short handoff. This prevents the following
-   section's black canvas from clipping the active title, letter, or copy. */
+/* Keep only the animated content above the approaching section. The section
+   canvas itself stays transparent, so it cannot create a black rectangular
+   mask over the current title, the next title, or the full logo below. */
 .letter-section.is-active-section{
   z-index:30;
+}
+.letter-section:not(.is-active-section){
+  z-index:1;
+}
+.pin-spacer{
+  background:transparent!important;
 }
 /* the channel: giant duplicate letterform laid back into the black */
 .bg-depth{
@@ -403,6 +409,7 @@ nav{
 /* ---------- full logo interstitial ---------- */
 .full-logo-interstitial{
   position:relative;
+  z-index:40;
   width:100%;
   min-height:0;
   aspect-ratio:1600 / 700;
@@ -444,6 +451,7 @@ nav{
 /* ---------- divisions ---------- */
 .divisions{
   position:relative;
+  z-index:40;
   min-height:88vh;
   background:var(--black);
   display:grid;
@@ -564,6 +572,8 @@ nav{
 
 /* ---------- logo wall ---------- */
 .logo-wall{
+  position:relative;
+  z-index:40;
   border-top:1px solid var(--hair);
   background:var(--black);
   padding:8vh 5vw 8vh;
@@ -642,6 +652,7 @@ nav{
 
 /* ---------- footer ---------- */
 footer{
+  z-index:40;
   background:var(--black);border-top:1px solid var(--hair);
   padding:16vh 8vw 8vh;position:relative;
 }
