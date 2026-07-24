@@ -161,6 +161,118 @@ nav{
   font-size:12px;
   color:var(--dim);
 }
+.team-card{display:flex;flex-direction:column}
+.team-meta{display:flex;flex-direction:column;flex:1}
+#ov-team .team-mini-bio{
+  margin:18px 0 0;
+  max-width:none;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:13px;
+  line-height:1.58;
+  color:var(--dim);
+}
+.team-read-more{
+  align-self:flex-start;
+  margin-top:auto;
+  padding:18px 0 3px;
+  border:0;
+  border-bottom:1px solid rgba(242,237,228,.42);
+  background:transparent;
+  color:var(--cream);
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:color .2s ease,border-color .2s ease;
+}
+.team-read-more:hover,
+.team-read-more:focus-visible{
+  color:var(--magenta);
+  border-color:var(--magenta);
+}
+#ov-team.bio-open{overflow:hidden}
+.team-bio-modal{
+  position:fixed;
+  inset:0;
+  z-index:12;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:44px;
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease,visibility .25s ease;
+}
+.team-bio-modal.is-open{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+.team-bio-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.86);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.team-bio-panel{
+  position:relative;
+  z-index:1;
+  width:min(900px,92vw);
+  max-height:min(82vh,900px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  border:1px solid var(--hair);
+  background:var(--ink);
+  padding:clamp(34px,5vw,72px);
+  box-shadow:0 28px 90px rgba(0,0,0,.48);
+}
+.team-bio-close{
+  position:absolute;
+  top:20px;
+  right:22px;
+  border:0;
+  background:transparent;
+  color:var(--dim);
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.24em;
+  cursor:pointer;
+}
+.team-bio-close:hover,
+.team-bio-close:focus-visible{color:var(--magenta)}
+.team-bio-kicker{
+  display:block;
+  margin-bottom:18px;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  color:var(--magenta);
+}
+.team-bio-panel h2{
+  margin:0 0 30px;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:clamp(40px,6vw,82px);
+  line-height:.92;
+  letter-spacing:-.045em;
+  text-transform:none;
+  font-weight:700;
+}
+.team-bio-copy p{
+  margin:0 0 18px;
+  max-width:72ch;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:clamp(15px,1.15vw,18px);
+  line-height:1.68;
+  color:var(--cream);
+}
+.team-bio-copy p:last-child{margin-bottom:0}
 @media (max-width:980px){
   .team-intro{align-items:flex-start;flex-direction:column;margin-bottom:34px}
   .team-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -170,9 +282,15 @@ nav{
   #ov-team .close{top:18px;right:20px}
   #ov-team .team-intro h2{font-size:clamp(58px,22vw,94px)}
   #ov-team .team-intro p{font-size:14px}
-  .team-grid{grid-template-columns:1fr;gap:34px}
+  .team-grid{grid-template-columns:1fr;gap:44px}
   .team-card img{aspect-ratio:4/5}
   .team-meta h3{font-size:25px}
+  .team-mini-bio{font-size:14px;line-height:1.62}
+  .team-bio-modal{padding:14px}
+  .team-bio-panel{width:100%;max-height:88svh;padding:54px 24px 32px}
+  .team-bio-close{top:18px;right:18px}
+  .team-bio-panel h2{font-size:clamp(40px,13vw,62px);margin-bottom:24px}
+  .team-bio-copy p{font-size:15px;line-height:1.65}
 }
 
 
@@ -948,6 +1066,8 @@ footer{
           <h3>David Borish</h3>
           <span class="team-role">CEO</span>
           <span class="team-handle">@DavidBorish</span>
+          <p class="team-mini-bio">David Borish is a Co-Founder and CEO of Magenta Studio, an Enterprise AI Strategist, keynote speaker, and author with two patents and 25 years building at the frontier of emerging technology. He founded The AI Spectator, advises Fortune 500 organizations on AI deployment, and is a Guest Lecturer at New York University. At Magenta Studio, he leads capital raising, partnerships, and business operations.</p>
+          <button class="team-read-more" type="button" data-bio-open="bio-david">Read more</button>
         </div>
       </article>
       <article class="team-card">
@@ -956,14 +1076,18 @@ footer{
           <h3>Jason Goldwatch</h3>
           <span class="team-role">CCO</span>
           <span class="team-handle">@Goldwatch</span>
+          <p class="team-mini-bio">Jason Goldwatch is a Co-Founder and Chief Creative Officer of Magenta Studio, a director and self-described disrupter who has shaped culture from behind the camera for three decades. Co-founder of Decon, the studio and label that became Nas-backed Mass Appeal, his work with Kid Cudi, Pharrell Williams, and Jay-Z helped define hip-hop's visual language. At Magenta Studio, he leads creative direction.</p>
+          <button class="team-read-more" type="button" data-bio-open="bio-jason">Read more</button>
         </div>
       </article>
       <article class="team-card">
-        <img src="team/william-hatcher-cct.jpeg" alt="Portrait of William Hatcher" loading="lazy" decoding="async">
+        <img src="team/william-hatcher-cct.jpeg" alt="Portrait of Will Hatcher" loading="lazy" decoding="async">
         <div class="team-meta">
-          <h3>William Hatcher</h3>
+          <h3>Will Hatcher</h3>
           <span class="team-role">CCT</span>
           <span class="team-handle">@KingWillonius</span>
+          <p class="team-mini-bio">Will Hatcher is a Co-Founder and Chief Creative Technologist of Magenta Studio, a comedian, author, and cultural innovator merging humor, technology, and imagination to shape the future of entertainment. Recognized by TIME, Ebony Power 100, and the Ad Age Power Tech List, he represents a new class of visionary creator. At Magenta Studio, he brings that same blend of humor and technology to AI-driven creative work.</p>
+          <button class="team-read-more" type="button" data-bio-open="bio-will">Read more</button>
         </div>
       </article>
       <article class="team-card">
@@ -972,9 +1096,72 @@ footer{
           <h3>Phillip Leeds</h3>
           <span class="team-role">COO</span>
           <span class="team-handle">@PhillipIsChillin</span>
+          <p class="team-mini-bio">Phillip Leeds is a Co-Founder and Chief Operating Officer of Magenta Studio, an AI production studio and creative agency. A veteran brand-builder who helped grow Pharrell Williams' Billionaire Boys Club and ICECREAM into globally recognized labels, he brings nearly three decades of experience spotting talent and building culture-defining brands. At Magenta Studio, he runs client relations and production delivery.</p>
+          <button class="team-read-more" type="button" data-bio-open="bio-phillip">Read more</button>
         </div>
       </article>
     </div>
+  </div>
+
+  <div class="team-bio-modal" id="bio-david" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="bio-david-title">
+    <div class="team-bio-backdrop" data-bio-close></div>
+    <article class="team-bio-panel">
+      <button class="team-bio-close" type="button" data-bio-close>CLOSE</button>
+      <span class="team-bio-kicker">Co-Founder &amp; CEO</span>
+      <h2 id="bio-david-title">David Borish</h2>
+      <div class="team-bio-copy">
+        <p>David Borish is a Co-Founder and CEO of Magenta Studio. He is an independent Enterprise AI Strategist, keynote speaker, and author based in New York. He created the Open-Prem Inflection Point framework, then partnered with IBM to deliver the Open-Prem Strategy Accelerator workshop. He advises Fortune 500 organizations on AI deployment and serves as a Guest Lecturer and Mentor at New York University. He holds two patents, has multiple successful exits, and has spent 25 years building at the edge of what's possible, from co-creating the first VR headset sold on television with Shark Tank's Daymond John to developing the first high-speed 360-degree camera technology adopted by the NFL and NRL.</p>
+        <p>In July 2024, Borish wrote that China's AI capabilities would surge, a call that drew skepticism until DeepSeek's emergence months later. Chinese open-source models now compete directly with leading commercial systems, a shift his research has tracked from the first signals forward. He is the architect of the Exponential Replacement Curve, a framework for measuring AI capability.</p>
+        <p>Borish is the founder of The AI Spectator, where he publishes daily analysis of the AI industry. His work has been featured in Forbes, MarketWatch, Morningstar, and The Canadian Press, and he delivers keynotes at institutions including NYU, Cornell, and IBM. He is the author of <em>The Tony Hawk Paradox</em>, a book exploring simulation theory through how video game tricks became real-world reality.</p>
+        <p>At Magenta Studio, Borish leads the capital raise, partnerships, and day-to-day business operations.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="team-bio-modal" id="bio-jason" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="bio-jason-title">
+    <div class="team-bio-backdrop" data-bio-close></div>
+    <article class="team-bio-panel">
+      <button class="team-bio-close" type="button" data-bio-close>CLOSE</button>
+      <span class="team-bio-kicker">Co-Founder &amp; Chief Creative Officer</span>
+      <h2 id="bio-jason-title">Jason Goldwatch</h2>
+      <div class="team-bio-copy">
+        <p>Jason Goldwatch is a Co-Founder and Chief Creative Officer of Magenta Studio. He is a director, editor, and self-described disrupter who has spent three decades shaping music and culture from behind the camera. Born in San Francisco and trained at CalArts, he began as the youngest director signed to Spike Jonze's Satellite Films, then toured as a photographer and documentarian with Dilated Peoples, Rage Against the Machine, and Kanye West.</p>
+        <p>In 2000, Goldwatch partnered with Peter Bittenbender on the documentary and soundtrack <em>One Big Trip</em>, which led to the pair co-founding Decon in 2002. Decon grew into a New York creative agency and record label known for campaigns with NBC Universal, Nissan, and Fiat. In 2013, Decon partnered with Nas to relaunch Mass Appeal, and Goldwatch became Executive Creative Director of the combined company, whose record label debuted with <em>Run the Jewels 2</em>.</p>
+        <p>He is best known for his directorial work with Kid Cudi, Pharrell Williams, Jay-Z, Tyler the Creator, Linkin Park, Nas, Kendrick Lamar, Jay Electronica, and The Alchemist, and he received a Daytime Emmy nomination for directing Eric Ripert's <em>Avec Eric</em> on the Cooking Channel. From his earliest work, he has credited himself at the start of every video he directs, a personal branding decision he made before the industry caught up to the idea.</p>
+        <p>At Magenta Studio, Goldwatch leads creative direction from concept through finished work, the same standard he has built his career on.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="team-bio-modal" id="bio-will" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="bio-will-title">
+    <div class="team-bio-backdrop" data-bio-close></div>
+    <article class="team-bio-panel">
+      <button class="team-bio-close" type="button" data-bio-close>CLOSE</button>
+      <span class="team-bio-kicker">Co-Founder &amp; Chief Creative Technologist</span>
+      <h2 id="bio-will-title">Will Hatcher</h2>
+      <div class="team-bio-copy">
+        <p>Will Hatcher is a Co-Founder and Chief Creative Technologist of Magenta Studio. He is a comedian, author, futurist, creative technologist, and cultural innovator reshaping the relationship between humor, music, and artificial intelligence. Recognized by TIME as one of the 100 Most Influential People in AI, honored in the Ebony Power 100 for 2025, and named to the Ad Age Power Tech List for 2025, he brings intellectual depth to his work as a contributor to the Mensa Research Journal.</p>
+        <p>A self-taught coder and “curious doer,” Hatcher creates boldly and continuously, using curiosity as fuel for new ideas. His viral AI hit “BBL DRIZZY” became one of the most widely remixed AI tracks in music history, sparking global conversations about Black creativity and the future of AI-driven art.</p>
+        <p>Hatcher also helped shape the rise of Clubhouse by creating one of its largest communities, The Comedy Club, which attracted more than 250,000 members and featured appearances from Kevin Hart, Tiffany Haddish, Tyrese, Lakeith Stanfield, MC Hammer, and Scooter Braun.</p>
+        <p>Often described as what you would get if Dave Chappelle and Steve Jobs came together, King Willonius blends comedic insight with visionary thinking. He has spoken at SXSW, TEDx, MIT, Harvard, Bridge Summit, and The Next Web, and serves on the board of the American Society for Artificial Intelligence.</p>
+        <p>At Magenta Studio, Hatcher brings that same blend of humor, technology, and storytelling instinct to push the boundaries of AI-driven creative work.</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="team-bio-modal" id="bio-phillip" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="bio-phillip-title">
+    <div class="team-bio-backdrop" data-bio-close></div>
+    <article class="team-bio-panel">
+      <button class="team-bio-close" type="button" data-bio-close>CLOSE</button>
+      <span class="team-bio-kicker">Co-Founder &amp; Chief Operating Officer</span>
+      <h2 id="bio-phillip-title">Phillip Leeds</h2>
+      <div class="team-bio-copy">
+        <p>Phillip Leeds is a Co-Founder and Chief Operating Officer of Magenta Studio, an AI production studio and creative agency redefining how brands and stories get made.</p>
+        <p>For more than a decade, Phillip was a key member of Pharrell Williams' core team, serving as Creative Director and Global Brand Manager for Billionaire Boys Club and ICECREAM, growing the labels from their 2005 launch into brands celebrated in Vogue and GQ and worn by everyone from Jay-Z to Andre Leon Talley. During this era, Phillip was also one of the four original co-founders of Mass Appeal, the influential hip-hop media and culture brand, alongside longtime collaborator and fellow Magenta co-founder Jason Goldwatch.</p>
+        <p>His career began at the vanguard of hip-hop, working alongside Lyor Cohen, Kevin Liles, and Chris Lighty at Rush Artist Management, before moving into tour management for Pharrell, N.E.R.D, and Kelis. In 2015, Phillip founded General Strategy / Agency For Higher, a creative consulting firm connecting brands, investors, and emerging industries, with General Strategy handling the firm's broader consulting work and Agency For Higher focused on the emerging legal cannabis industry. He is also the photographer behind the acclaimed <em>Big Shots!</em> book series (Rizzoli, 2017; Blurring Books, 2024), capturing three decades of hip-hop and fashion's most iconic figures.</p>
+        <p>At Magenta Studio, Phillip runs client relations and production delivery, applying the same eye for talent and deep network across music, fashion, and culture that built BBC and ICECREAM.</p>
+      </div>
+    </article>
   </div>
 </div>
 
@@ -1361,6 +1548,13 @@ function openOverlay(trigger){
 
 function closeOverlay(ov){
   if(!ov) return;
+  if(ov.id==="ov-team"){
+    ov.querySelectorAll(".team-bio-modal.is-open").forEach(modal=>{
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden","true");
+    });
+    ov.classList.remove("bio-open");
+  }
   const trigger=overlayTriggers.get(ov);
   const ox=ov.dataset.ox || "50%";
   const oy=ov.dataset.oy || "50%";
@@ -1390,8 +1584,47 @@ document.querySelectorAll("[data-close]").forEach(btn=>{
   btn.addEventListener("click",()=>closeOverlay(btn.closest(".overlay")));
 });
 
+const bioOpeners=[...document.querySelectorAll("[data-bio-open]")];
+let activeBioTrigger=null;
+
+function openTeamBio(trigger){
+  const modal=document.getElementById(trigger.dataset.bioOpen);
+  if(!modal) return;
+  document.querySelectorAll(".team-bio-modal.is-open").forEach(open=>{
+    open.classList.remove("is-open");
+    open.setAttribute("aria-hidden","true");
+  });
+  activeBioTrigger=trigger;
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden","false");
+  document.getElementById("ov-team")?.classList.add("bio-open");
+  modal.querySelector(".team-bio-panel")?.scrollTo(0,0);
+  modal.querySelector(".team-bio-close")?.focus();
+}
+
+function closeTeamBio(modal){
+  if(!modal) return;
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden","true");
+  if(!document.querySelector(".team-bio-modal.is-open")){
+    document.getElementById("ov-team")?.classList.remove("bio-open");
+  }
+  if(activeBioTrigger && document.contains(activeBioTrigger)) activeBioTrigger.focus();
+  activeBioTrigger=null;
+}
+
+bioOpeners.forEach(btn=>btn.addEventListener("click",()=>openTeamBio(btn)));
+document.querySelectorAll("[data-bio-close]").forEach(btn=>{
+  btn.addEventListener("click",()=>closeTeamBio(btn.closest(".team-bio-modal")));
+});
+
 document.addEventListener("keydown",e=>{
   if(e.key!=="Escape") return;
+  const openBio=document.querySelector(".team-bio-modal.is-open");
+  if(openBio){
+    closeTeamBio(openBio);
+    return;
+  }
   const open=visibleOverlays();
   if(open.length) closeOverlay(open[open.length-1]);
 });
