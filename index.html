@@ -262,11 +262,6 @@ nav{
   width:100%;text-align:center;z-index:5;
   font-family:Helvetica,Arial,sans-serif;
 }
-.sec-copy .eyebrow{
-  font-family:Helvetica,Arial,sans-serif;
-  font-size:clamp(12px,1vw,16px);letter-spacing:.4em;color:var(--cream);text-transform:uppercase;
-  display:block;margin-bottom:22px;font-weight:700;
-}
 .sec-copy p{
   width:min(1040px,86vw);
   font-family:Helvetica,Arial,sans-serif;
@@ -359,21 +354,69 @@ nav{
 
 
 
-/* ---------- between-letter title transitions ---------- */
-.next-section-title{
-  position:absolute;inset:0;z-index:9;
-  display:flex;align-items:center;justify-content:center;
-  padding:0 7vw;pointer-events:none;opacity:0;
-  color:var(--ivory);text-align:center;
-  font-family:var(--display);font-weight:700;
-  font-size:clamp(52px,10vw,180px);line-height:.88;letter-spacing:-.055em;
+/* ---------- section-title morphs ---------- */
+/*
+   Each section begins with its title centered in the viewport. As the
+   section arrives, the exact same title shrinks and docks into the small
+   eyebrow position above the body copy.
+*/
+.section-title-morph{
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:9;
+  transform:translate(-50%,-50%);
+  transform-origin:50% 50%;
+  pointer-events:none;
+  max-width:92vw;
+  color:var(--cream);
+  text-align:center;
+  text-transform:uppercase;
   text-wrap:balance;
+  font-family:Helvetica,Arial,sans-serif;
+  font-weight:700;
+  font-size:clamp(38px,6.2vw,104px);
+  line-height:1;
+  letter-spacing:.22em;
+  white-space:nowrap;
+  will-change:transform,opacity;
+}
+.section-title-morph.is-long{
+  font-size:clamp(30px,4.6vw,78px);
+  letter-spacing:.18em;
+}
+.sec-copy .eyebrow-slot{
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:clamp(12px,1vw,16px);
+  letter-spacing:.4em;
+  color:var(--cream);
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:22px;
+  font-weight:700;
+  visibility:hidden;
 }
 @media (max-width:768px){
-  .next-section-title{font-size:clamp(46px,15vw,92px);padding:0 10vw}
+  .section-title-morph{
+    max-width:88vw;
+    font-size:clamp(30px,9vw,62px);
+    line-height:1.04;
+    letter-spacing:.18em;
+    white-space:normal;
+  }
+  .section-title-morph.is-long{
+    font-size:clamp(25px,7.2vw,48px);
+    letter-spacing:.13em;
+  }
+  .sec-copy .eyebrow-slot{
+    margin-bottom:16px;
+    font-size:clamp(11px,3vw,14px);
+  }
 }
 @media (prefers-reduced-motion:reduce){
-  .next-section-title{display:none}
+  .section-title-morph{display:none}
+  .sec-copy .eyebrow-slot{visibility:visible}
+  .sec-copy p{opacity:1!important}
 }
 
 /* ---------- logo wall ---------- */
@@ -481,7 +524,6 @@ footer .big a:hover{color:var(--magenta)}
   .glyph{height:clamp(320px,68vh,600px);top:50%}
   .bg-depth{height:90vh}
   .sec-copy{padding:9vh 5vw}
-  .sec-copy .eyebrow{margin-bottom:16px;font-size:clamp(11px,3vw,14px)}
   .sec-copy p{width:88vw;font-size:clamp(20px,5.6vw,30px);line-height:1.12}
   .divisions{grid-template-columns:1fr}
   .div-panel:first-child{border-right:none}
@@ -1240,7 +1282,7 @@ function vectors(axis){
 const main = document.getElementById("story");
 SECTIONS.forEach((s,i)=>{
   const sec = document.createElement("section");
-  const nextTitle = SECTIONS[i+1]?.eyebrow || "";
+  const longTitle = s.eyebrow.length > 20 ? " is-long" : "";
   sec.className = "letter-section";
   sec.setAttribute("aria-label", s.eyebrow);
   sec.innerHTML = `
@@ -1253,10 +1295,10 @@ SECTIONS.forEach((s,i)=>{
       <div class="glyph b lm-${s.asset}" aria-hidden="true"></div>
     </div>
     <div class="sec-copy">
-      <span class="eyebrow">${s.eyebrow}</span>
+      <span class="eyebrow-slot" aria-hidden="true">${s.eyebrow}</span>
       <p>${s.copy}</p>
     </div>
-    ${nextTitle ? `<div class="next-section-title" aria-hidden="true">${nextTitle}</div>` : ""}`;
+    <div class="section-title-morph${longTitle}" aria-hidden="true">${s.eyebrow}</div>`;
   main.appendChild(sec);
 });
 
@@ -1376,42 +1418,72 @@ mm.add({
     const b = sec.querySelector(".glyph.b");
     const depth = sec.querySelector(".bg-depth");
     const copy = sec.querySelector(".sec-copy");
-    const nextTitle = sec.querySelector(".next-section-title");
+    const bodyCopy = sec.querySelector(".sec-copy p");
+    const title = sec.querySelector(".section-title-morph");
+    const titleSlot = sec.querySelector(".eyebrow-slot");
     const scaleIn = mobile ? 1.6 : 2.6;
+
+    /* Local coordinates keep the title-to-eyebrow move accurate even before
+       the section has entered the viewport or after the browser resizes. */
+    const centerInsideSection = (el)=>{
+      let x = el.offsetWidth / 2;
+      let y = el.offsetHeight / 2;
+      let node = el;
+      while(node && node !== sec){
+        x += node.offsetLeft || 0;
+        y += node.offsetTop || 0;
+        node = node.offsetParent;
+      }
+      return {x,y};
+    };
+    const titleTargetX = ()=>centerInsideSection(titleSlot).x - sec.clientWidth / 2;
+    const titleTargetY = ()=>centerInsideSection(titleSlot).y - sec.clientHeight / 2;
+    const titleTargetScale = ()=>{
+      const small = parseFloat(getComputedStyle(titleSlot).fontSize) || 14;
+      const large = parseFloat(getComputedStyle(title).fontSize) || 72;
+      return small / large;
+    };
+
+    gsap.set(bodyCopy,{opacity:0,y:24});
+    gsap.set(title,{x:0,y:0,scale:1,opacity:1});
 
     const tl = gsap.timeline({
       scrollTrigger:{
         trigger:sec, start:"top top",
         end: mobile ? "+=46%" : "+=42%",
-        pin:true, scrub:0.22, anticipatePin:1
+        pin:true, scrub:0.22, anticipatePin:1,
+        invalidateOnRefresh:true
       }
     });
 
-    /* ENTER: huge, off-screen, then merge quickly. */
+    /* The title is the first thing visible after the prior section/video.
+       It shrinks and docks exactly where the small section title belongs. */
+    tl.to(title,{
+      x:titleTargetX,
+      y:titleTargetY,
+      scale:titleTargetScale,
+      letterSpacing:()=>getComputedStyle(titleSlot).letterSpacing,
+      duration:.28,
+      ease:"power2.inOut"
+    },0);
+
+    /* The letter and the body rise behind the shrinking title. */
     tl.fromTo(r,
       {xPercent:-50,yPercent:-50,x:v.r.x,y:v.r.y,rotation:v.r.rot,scale:scaleIn,opacity:0},
-      {opacity:.58,duration:.045,ease:"none"},0)
-      .to(r,{x:mobile?0:"3vw",y:0,rotation:0,scale:1.12,duration:.26,ease:"power2.in"},0)
-      .to(r,{x:0,scale:1,duration:.08,ease:"power3.out"},.26);
+      {opacity:.58,duration:.04,ease:"none"},.08)
+      .to(r,{x:mobile?0:"3vw",y:0,rotation:0,scale:1.12,duration:.25,ease:"power2.in"},.08)
+      .to(r,{x:0,scale:1,duration:.07,ease:"power3.out"},.33);
     tl.fromTo(b,
       {xPercent:-50,yPercent:-50,x:v.b.x,y:v.b.y,rotation:v.b.rot,scale:scaleIn,opacity:0},
-      {opacity:.58,duration:.045,ease:"none"},0)
-      .to(b,{x:mobile?0:"-3vw",y:0,rotation:0,scale:1.12,duration:.26,ease:"power2.in"},0)
-      .to(b,{x:0,scale:1,duration:.08,ease:"power3.out"},.26);
+      {opacity:.58,duration:.04,ease:"none"},.08)
+      .to(b,{x:mobile?0:"-3vw",y:0,rotation:0,scale:1.12,duration:.25,ease:"power2.in"},.08)
+      .to(b,{x:0,scale:1,duration:.07,ease:"power3.out"},.33);
 
-    /* HOLD: copy is readable without requiring a second full swipe. */
-    tl.from(copy,{y:28,opacity:0,duration:.10,ease:"power2.out"},.29)
-      .to(copy,{opacity:0,y:-18,duration:.08,ease:"power2.in"},.61);
+    tl.to(bodyCopy,{y:0,opacity:1,duration:.11,ease:"power2.out"},.25);
 
-    /* EXIT: clear the current letter before previewing the next title. */
-    tl.to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.14,ease:"power2.in"},.60);
-
-    if(nextTitle){
-      tl.fromTo(nextTitle,
-        {scale:.48,opacity:0},
-        {scale:1.24,opacity:1,duration:.14,ease:"power2.out"},.69)
-        .to(nextTitle,{scale:.72,opacity:0,duration:.16,ease:"power2.in"},.84);
-    }
+    /* Hold briefly, then clear the section for the next centered title. */
+    tl.to([bodyCopy,title],{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},.68)
+      .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.15,ease:"power2.in"},.68);
 
     /* the channel: laid-back giant letter drifts slower than scroll */
     gsap.fromTo(depth,
