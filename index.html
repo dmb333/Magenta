@@ -1318,6 +1318,12 @@ footer{
   }
 }
 
+
+
+/* ---------- final chapter title order safeguard ---------- */
+.sec-copy .eyebrow-slot{order:0;}
+.sec-copy p{order:1;}
+
 </style>
 </head>
 <body>
@@ -2014,12 +2020,36 @@ mm.add({
       }
       return {x,y};
     };
-    const titleTargetX = ()=>centerInsideStage(titleSlot).x - title.offsetLeft;
-    const titleTargetY = ()=>centerInsideStage(titleSlot).y - title.offsetTop + largeDesktopCopyOffset;
+    const topInsideStage = (el)=>{
+      let y = 0;
+      let node = el;
+      while(node && node !== stage){
+        y += node.offsetTop || 0;
+        node = node.offsetParent;
+      }
+      return y;
+    };
+    const isDivisionsTitle = titleSlot.classList.contains("is-divisions");
     const titleTargetScale = ()=>{
       const small = parseFloat(getComputedStyle(titleSlot).fontSize) || 14;
       const large = parseFloat(getComputedStyle(title).fontSize) || 72;
       return small / large;
+    };
+    const titleTargetX = ()=>centerInsideStage(titleSlot).x - title.offsetLeft;
+    const titleTargetY = ()=>{
+      /* The last title is long enough to wrap at the large source size on
+         some 4K/5K desktop viewports. Position its settled bottom edge from
+         the paragraph's top edge instead of relying on center-to-center
+         alignment. This guarantees that the title remains above the text. */
+      if(largeDesktop && isDivisionsTitle){
+        const styles = getComputedStyle(copy);
+        const gap = parseFloat(styles.rowGap) || parseFloat(styles.gap) || 40;
+        const visualTitleHeight = title.offsetHeight * titleTargetScale();
+        const bodyTop = topInsideStage(bodyCopy) + largeDesktopCopyOffset;
+        const desiredTitleCenter = bodyTop - gap - (visualTitleHeight / 2);
+        return desiredTitleCenter - title.offsetTop;
+      }
+      return centerInsideStage(titleSlot).y - title.offsetTop + largeDesktopCopyOffset;
     };
 
     gsap.set(copy,{y:largeDesktopCopyOffset});
