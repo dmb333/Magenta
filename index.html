@@ -150,7 +150,7 @@ nav{
   font-family:Helvetica,Arial,sans-serif;
   font-size:11px;
   font-weight:700;
-  letter-spacing:.28em;
+  letter-spacing:.19em;
   text-transform:uppercase;
   color:var(--cream);
 }
@@ -161,6 +161,47 @@ nav{
   font-size:12px;
   color:var(--dim);
 }
+
+.team-socials{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:13px;
+}
+.team-socials a{
+  width:29px;
+  height:29px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(242,237,228,.25);
+  border-radius:50%;
+  color:var(--cream);
+  background:transparent;
+  transition:color .2s ease,border-color .2s ease,background-color .2s ease,transform .2s ease;
+}
+.team-socials a:hover,
+.team-socials a:focus-visible{
+  color:var(--magenta);
+  border-color:var(--magenta);
+  background:rgba(255,0,255,.05);
+  transform:translateY(-2px);
+  outline:none;
+}
+.team-socials svg{
+  width:14px;
+  height:14px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.team-socials .social-dot{
+  fill:currentColor;
+  stroke:none;
+}
+
 .team-card{display:flex;flex-direction:column}
 .team-meta{display:flex;flex-direction:column;flex:1}
 #ov-team .team-mini-bio{
@@ -1083,8 +1124,13 @@ footer{
         <img src="team/david-borish-ceo.jpeg" alt="Portrait of David Borish" loading="lazy" decoding="async">
         <div class="team-meta">
           <h3>David Borish</h3>
-          <span class="team-role">CEO</span>
+          <span class="team-role">Chief Executive Officer</span>
           <span class="team-handle">@DavidBorish</span>
+          <div class="team-socials" aria-label="David Borish links">
+            <a href="https://www.davidborish.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit David Borish's website" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.7 2.6 4.1 5.6 4.1 9S14.7 18.4 12 21M12 3C9.3 5.6 7.9 8.6 7.9 12S9.3 18.4 12 21"></path></svg></a>
+            <a href="https://www.linkedin.com/in/davidborish/" target="_blank" rel="noopener noreferrer" aria-label="Visit David Borish's LinkedIn profile" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 8.2V19M6.3 5.1v.1M10.4 19v-6.1c0-2.4 1.4-4 3.7-4 2.2 0 3.6 1.4 3.6 4V19M10.4 9.3V19"></path></svg></a>
+            <a href="https://www.instagram.com/davidborish/" target="_blank" rel="noopener noreferrer" aria-label="Visit David Borish's Instagram profile" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle class="social-dot" cx="17.4" cy="6.8" r=".8"></circle></svg></a>
+          </div>
           <p class="team-mini-bio">David Borish is a Co-Founder and CEO of Magenta Studio, an Enterprise AI Strategist, keynote speaker, and author with two patents and 25 years building at the frontier of emerging technology. He founded The AI Spectator, advises Fortune 500 organizations on AI deployment, and is a Guest Lecturer at New York University. At Magenta Studio, he leads capital raising, partnerships, and business operations.</p>
           <button class="team-read-more" type="button" data-bio-open="bio-david">Read more</button>
         </div>
@@ -1093,8 +1139,13 @@ footer{
         <img src="team/jason-goldwatch-cco.jpeg" alt="Portrait of Jason Goldwatch" loading="lazy" decoding="async">
         <div class="team-meta">
           <h3>Jason Goldwatch</h3>
-          <span class="team-role">CCO</span>
+          <span class="team-role">Chief Creative Officer</span>
           <span class="team-handle">@Goldwatch</span>
+          <div class="team-socials" aria-label="Jason Goldwatch links">
+            <a href="https://www.jasongoldwatch.co/" target="_blank" rel="noopener noreferrer" aria-label="Visit Jason Goldwatch's website" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.7 2.6 4.1 5.6 4.1 9S14.7 18.4 12 21M12 3C9.3 5.6 7.9 8.6 7.9 12S9.3 18.4 12 21"></path></svg></a>
+            <a href="https://www.linkedin.com/in/jason-goldwatch-591425361/" target="_blank" rel="noopener noreferrer" aria-label="Visit Jason Goldwatch's LinkedIn profile" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 8.2V19M6.3 5.1v.1M10.4 19v-6.1c0-2.4 1.4-4 3.7-4 2.2 0 3.6 1.4 3.6 4V19M10.4 9.3V19"></path></svg></a>
+            <a href="https://www.instagram.com/goldwatch/" target="_blank" rel="noopener noreferrer" aria-label="Visit Jason Goldwatch's Instagram profile" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle class="social-dot" cx="17.4" cy="6.8" r=".8"></circle></svg></a>
+          </div>
           <p class="team-mini-bio">Jason Goldwatch is a Co-Founder and Chief Creative Officer of Magenta Studio, a director and self-described disrupter who has shaped culture from behind the camera for three decades. Co-founder of Decon, the studio and label that became Nas-backed Mass Appeal, his work with Kid Cudi, Pharrell Williams, and Jay-Z helped define hip-hop's visual language. At Magenta Studio, he leads creative direction.</p>
           <button class="team-read-more" type="button" data-bio-open="bio-jason">Read more</button>
         </div>
@@ -1103,8 +1154,13 @@ footer{
         <img src="team/william-hatcher-cct.jpeg" alt="Portrait of Will Hatcher" loading="lazy" decoding="async">
         <div class="team-meta">
           <h3>Will Hatcher</h3>
-          <span class="team-role">CCT</span>
+          <span class="team-role">Chief Creative Technologist</span>
           <span class="team-handle">@KingWillonius</span>
+          <div class="team-socials" aria-label="Will Hatcher links">
+            <a href="https://www.kingwillonius.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit Will Hatcher's website" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.7 2.6 4.1 5.6 4.1 9S14.7 18.4 12 21M12 3C9.3 5.6 7.9 8.6 7.9 12S9.3 18.4 12 21"></path></svg></a>
+            <a href="https://www.linkedin.com/in/will-hatcher/" target="_blank" rel="noopener noreferrer" aria-label="Visit Will Hatcher's LinkedIn profile" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 8.2V19M6.3 5.1v.1M10.4 19v-6.1c0-2.4 1.4-4 3.7-4 2.2 0 3.6 1.4 3.6 4V19M10.4 9.3V19"></path></svg></a>
+            <a href="https://www.instagram.com/kingwillonius/" target="_blank" rel="noopener noreferrer" aria-label="Visit Will Hatcher's Instagram profile" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle class="social-dot" cx="17.4" cy="6.8" r=".8"></circle></svg></a>
+          </div>
           <p class="team-mini-bio">Will Hatcher is a Co-Founder and Chief Creative Technologist of Magenta Studio, a comedian, author, and cultural innovator merging humor, technology, and imagination to shape the future of entertainment. Recognized by TIME, Ebony Power 100, and the Ad Age Power Tech List, he represents a new class of visionary creator. At Magenta Studio, he brings that same blend of humor and technology to AI-driven creative work.</p>
           <button class="team-read-more" type="button" data-bio-open="bio-will">Read more</button>
         </div>
@@ -1113,8 +1169,13 @@ footer{
         <img src="team/phillip-leeds-coo.jpeg" alt="Portrait of Phillip Leeds" loading="lazy" decoding="async">
         <div class="team-meta">
           <h3>Phillip Leeds</h3>
-          <span class="team-role">COO</span>
+          <span class="team-role">Chief Operating Officer</span>
           <span class="team-handle">@PhillipIsChillin</span>
+          <div class="team-socials" aria-label="Phillip Leeds links">
+            <a href="https://bigshotsbook.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit Phillip Leeds's website" title="Website"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.7 2.6 4.1 5.6 4.1 9S14.7 18.4 12 21M12 3C9.3 5.6 7.9 8.6 7.9 12S9.3 18.4 12 21"></path></svg></a>
+            <a href="https://www.linkedin.com/in/phillip-leeds-79b91212/" target="_blank" rel="noopener noreferrer" aria-label="Visit Phillip Leeds's LinkedIn profile" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 8.2V19M6.3 5.1v.1M10.4 19v-6.1c0-2.4 1.4-4 3.7-4 2.2 0 3.6 1.4 3.6 4V19M10.4 9.3V19"></path></svg></a>
+            <a href="https://www.instagram.com/phillipischillin/" target="_blank" rel="noopener noreferrer" aria-label="Visit Phillip Leeds's Instagram profile" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle class="social-dot" cx="17.4" cy="6.8" r=".8"></circle></svg></a>
+          </div>
           <p class="team-mini-bio">Phillip Leeds is a Co-Founder and Chief Operating Officer of Magenta Studio, an AI production studio and creative agency. A veteran brand-builder who helped grow Pharrell Williams' Billionaire Boys Club and ICECREAM into globally recognized labels, he brings nearly three decades of experience spotting talent and building culture-defining brands. At Magenta Studio, he runs client relations and production delivery.</p>
           <button class="team-read-more" type="button" data-bio-open="bio-phillip">Read more</button>
         </div>
@@ -1126,7 +1187,7 @@ footer{
     <div class="team-bio-backdrop" data-bio-close></div>
     <article class="team-bio-panel">
       <button class="team-bio-close" type="button" data-bio-close>CLOSE</button>
-      <span class="team-bio-kicker">Co-Founder &amp; CEO</span>
+      <span class="team-bio-kicker">Co-Founder &amp; Chief Executive Officer</span>
       <h2 id="bio-david-title">David Borish</h2>
       <div class="team-bio-copy">
         <p>David Borish is a Co-Founder and CEO of Magenta Studio. He is an independent Enterprise AI Strategist, keynote speaker, and author based in New York. He created the Open-Prem Inflection Point framework, then partnered with IBM to deliver the Open-Prem Strategy Accelerator workshop. He advises Fortune 500 organizations on AI deployment and serves as a Guest Lecturer and Mentor at New York University. He holds two patents, has multiple successful exits, and has spent 25 years building at the edge of what's possible, from co-creating the first VR headset sold on television with Shark Tank's Daymond John to developing the first high-speed 360-degree camera technology adopted by the NFL and NRL.</p>
