@@ -335,6 +335,14 @@ nav{
 .letter-section{
   position:relative;height:100vh;overflow:hidden;background:var(--black);
   perspective:900px;
+  isolation:isolate;
+  z-index:1;
+}
+/* Keep the section currently being pinned above the next section that has
+   been pulled upward for the short handoff. This prevents the following
+   section's black canvas from clipping the active title, letter, or copy. */
+.letter-section.is-active-section{
+  z-index:30;
 }
 /* the channel: giant duplicate letterform laid back into the black */
 .bg-depth{
@@ -1705,7 +1713,9 @@ mm.add({
         pinSpacing:false,
         scrub:0.22,
         anticipatePin:1,
-        invalidateOnRefresh:true
+        invalidateOnRefresh:true,
+        onToggle:self=>sec.classList.toggle("is-active-section", self.isActive),
+        onRefresh:self=>sec.classList.toggle("is-active-section", self.isActive)
       }
     });
 
