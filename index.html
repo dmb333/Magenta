@@ -86,6 +86,74 @@ nav{
 }
 .overlay .close:hover{border-color:var(--magenta)}
 
+
+/* ---------- reels overlay ---------- */
+#ov-reels{
+  justify-content:flex-start;
+  align-items:stretch;
+  padding:72px 5vw 64px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+#ov-reels .close{
+  position:fixed;
+  top:24px;
+  z-index:2;
+}
+.reels-shell{
+  width:100%;
+  max-width:1440px;
+  margin:0 auto;
+}
+#ov-reels .reels-title{
+  margin:0 0 42px;
+  font-family:var(--display);
+  font-size:clamp(64px,9vw,150px);
+  line-height:.82;
+  text-transform:uppercase;
+}
+.reels-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:48px;
+}
+.reel-card{
+  min-width:0;
+  border-top:1px solid var(--hair);
+  padding-top:18px;
+}
+.reel-media{
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  background:#000;
+}
+.reel-media video{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#000;
+}
+.reel-card h3{
+  margin:18px 0 0;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:clamp(24px,2.2vw,38px);
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.025em;
+}
+@media (max-width:600px){
+  #ov-reels{padding:86px 20px 44px}
+  #ov-reels .close{top:18px;right:20px}
+  #ov-reels .reels-title{
+    margin-bottom:30px;
+    font-size:clamp(58px,22vw,94px);
+  }
+  .reel-card{padding-top:14px}
+  .reel-card h3{margin-top:14px;font-size:25px}
+}
+
 /* ---------- team overlay ---------- */
 #ov-team{
   justify-content:flex-start;
@@ -1351,10 +1419,22 @@ footer{
   </div>
 </nav>
 
-<div class="overlay" id="ov-reels" role="dialog" aria-modal="true" aria-label="Reels">
-  <button class="close" data-close>CLOSE</button>
-  <h2>Reels</h2>
-  <p>Five to eight pieces, curated ruthlessly. In production — the work decides when this page opens.</p>
+<div class="overlay" id="ov-reels" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Reels">
+  <button class="close" type="button" data-close>CLOSE</button>
+  <div class="reels-shell">
+    <h2 class="reels-title">Reels</h2>
+    <div class="reels-grid">
+      <article class="reel-card">
+        <div class="reel-media">
+          <video controls playsinline preload="metadata" poster="commercials-poster.jpg" aria-label="Commercials reel">
+            <source src="Commercials.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+          </video>
+        </div>
+        <h3>Commercials</h3>
+      </article>
+    </div>
+  </div>
 </div>
 <div class="overlay" id="ov-team" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Team">
   <button class="close" type="button" data-close>CLOSE</button>
@@ -1879,6 +1959,9 @@ function openOverlay(trigger){
 
 function closeOverlay(ov){
   if(!ov) return;
+  if(ov.id==="ov-reels"){
+    ov.querySelectorAll("video").forEach(video=>video.pause());
+  }
   if(ov.id==="ov-team"){
     ov.querySelectorAll(".team-bio-modal.is-open").forEach(modal=>{
       modal.classList.remove("is-open");
