@@ -1392,45 +1392,17 @@ footer{
 .sec-copy .eyebrow-slot{order:0;}
 .sec-copy p{order:1;}
 
-/* The last chapter switches to its real in-flow title on large desktop
-   screens. Keep that title as a normal flex item above the paragraph. */
+/* On large desktop screens, every settled chapter title uses the real
+   in-flow title slot above its paragraph. The animated title crossfades into
+   this slot, so Safari, macOS scaling, and ultra-wide viewports cannot alter
+   the title-to-copy spacing. */
 @media (min-width:1600px) and (min-height:900px){
-  .sec-copy .eyebrow-slot.is-divisions{
-    position:relative;
-    flex:0 0 auto;
-    transform:none !important;
-  }
-}
-
-
-
-/* ---------- robust large-desktop chapter lockups ---------- */
-/*
-   On wide, high-resolution desktop viewports, every settled chapter title
-   now switches to the real in-flow title element above its paragraph.
-   This removes monitor- and font-metric-dependent positioning math from the
-   final lockup while preserving the existing morph animation.
-*/
-@media (min-width:1600px) and (min-height:900px){
-  .sec-copy{
-    --chapter-title-body-gap:clamp(38px,3.5vh,58px);
-  }
-
   .sec-copy .eyebrow-slot,
   .sec-copy .eyebrow-slot.is-building,
   .sec-copy .eyebrow-slot.is-divisions{
     position:relative;
     flex:0 0 auto;
     transform:none !important;
-  }
-
-  /* The revised section copy is longer, so cap its scale only on the large
-     displays that were showing inconsistent spacing. Laptop and mobile
-     typography remain unchanged. */
-  .sec-copy p{
-    width:min(1180px,84vw);
-    font-size:clamp(24px,2.05vw,38px);
-    line-height:1.16;
   }
 }
 
@@ -2154,11 +2126,11 @@ mm.add({
       }
       return {x,y};
     };
-    /* On large desktop screens, use the real flex title for the completed
-       lockup in every chapter—not only the final chapter. The animated title
-       still performs the entrance and docking motion, then hands off to the
-       in-flow title immediately before the paragraph appears. */
-    const useLargeDesktopLockup = largeDesktop;
+    /* On large desktop viewports, every title finishes in its real flex item.
+       The animated title still performs the centered-to-small morph, then
+       crossfades into the in-flow title slot. This removes the separate
+       transformed resting position that was breaking on large Mac displays. */
+    const useDesktopTitleLockup = largeDesktop;
     const titleTargetScale = ()=>{
       const small = parseFloat(getComputedStyle(titleSlot).fontSize) || 14;
       const large = parseFloat(getComputedStyle(title).fontSize) || 72;
@@ -2170,8 +2142,8 @@ mm.add({
     gsap.set(copy,{y:largeDesktopCopyOffset});
     gsap.set(bodyCopy,{opacity:0,y:24});
     gsap.set(title,{x:0,y:0,scale:1,opacity:1});
-    if(useLargeDesktopLockup){
-      gsap.set(titleSlot,{visibility:"visible",opacity:0});
+    if(useDesktopTitleLockup){
+      gsap.set(titleSlot,{visibility:"visible",opacity:0,y:0});
     }
 
     const tl = gsap.timeline({
@@ -2213,21 +2185,21 @@ mm.add({
       .to(b,{x:mobile?0:"-3vw",y:0,rotation:0,scale:1.12,duration:mobile ? .34 : .25,ease:"power2.in"},mobile ? .12 : .08)
       .to(b,{x:0,scale:1,duration:.08,ease:"power3.out"},mobile ? .46 : .33);
 
-    /* At the end of the desktop docking motion, reveal the real flex title.
-       The title and paragraph then share one layout-controlled gap. */
-    if(useLargeDesktopLockup){
-      tl.to(title,{opacity:0,duration:.035,ease:"none"},.275)
-        .to(titleSlot,{opacity:1,duration:.035,ease:"none"},.275);
+    /* On large desktop screens, hand every title off to its real in-flow
+       title element only after the morph has reached the reserved slot. */
+    if(useDesktopTitleLockup){
+      tl.to(title,{opacity:0,duration:.045,ease:"none"},.28)
+        .to(titleSlot,{opacity:1,duration:.045,ease:"none"},.28);
     }
 
-    const bodyRevealAt = mobile ? .34 : (useLargeDesktopLockup ? .295 : .25);
-    tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},bodyRevealAt);
+    const bodyInAt = useDesktopTitleLockup ? .31 : (mobile ? .34 : .25);
+    tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},bodyInAt);
 
     /* Hold the completed section almost to the handoff. The following
        section is pulled upward in CSS so its title begins entering after
        roughly half the former post-section gap. */
     const handoffAt = mobile ? (i === SECTIONS.length - 1 ? .93 : .89) : (i === SECTIONS.length - 1 ? .88 : .82);
-    const outgoingCopy = useLargeDesktopLockup ? [bodyCopy,title,titleSlot] : [bodyCopy,title];
+    const outgoingCopy = useDesktopTitleLockup ? [bodyCopy,title,titleSlot] : [bodyCopy,title];
     tl.to(outgoingCopy,{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},handoffAt)
       .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.12,ease:"power2.in"},handoffAt);
 
