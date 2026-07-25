@@ -1402,6 +1402,38 @@ footer{
   }
 }
 
+
+
+/* ---------- robust large-desktop chapter lockups ---------- */
+/*
+   On wide, high-resolution desktop viewports, every settled chapter title
+   now switches to the real in-flow title element above its paragraph.
+   This removes monitor- and font-metric-dependent positioning math from the
+   final lockup while preserving the existing morph animation.
+*/
+@media (min-width:1600px) and (min-height:900px){
+  .sec-copy{
+    --chapter-title-body-gap:clamp(38px,3.5vh,58px);
+  }
+
+  .sec-copy .eyebrow-slot,
+  .sec-copy .eyebrow-slot.is-building,
+  .sec-copy .eyebrow-slot.is-divisions{
+    position:relative;
+    flex:0 0 auto;
+    transform:none !important;
+  }
+
+  /* The revised section copy is longer, so cap its scale only on the large
+     displays that were showing inconsistent spacing. Laptop and mobile
+     typography remain unchanged. */
+  .sec-copy p{
+    width:min(1180px,84vw);
+    font-size:clamp(24px,2.05vw,38px);
+    line-height:1.16;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1854,37 +1886,37 @@ ScrollTrigger.config({ignoreMobileResize:true});
 const SECTIONS = [
   {
     letter:"M", asset:"M", eyebrow:"The Concept",
-    copy:"Magenta doesn't exist. There is no wavelength for it, no place on the visible spectrum where it lives. It appears when the farthest ends of light hit the eye at once and the brain refuses to choose. It builds the color itself. Magenta is not seen. It is assembled, impossible without the human mind.",
+    copy:"Magenta does not exist. There is no visible wavelength for it. It occurs when the farthest opposite ends of the light spectrum hit the eyes at once. Because the brain cannot reconcile them, it constructs the color itself. A perfect compromise. Magenta is impossible without the human mind to assemble it. This is the concept.",
     axis:"x"
   },
   {
     letter:"A", asset:"A1", eyebrow:"The Moment",
-    copy:"A first generation to have crossed from analog to digital. Content is everywhere; attention is scarce. We see it, clearly. Brands spend more to be seen less. AI made production cheap for everyone; it made no one's work matter more. The advantage belongs to whoever can still tell a story that lands. Craft rules. Concept wins. But currently there's a split...",
+    copy:"As the first generation to cross from analog to digital, we've arrived. Content is everywhere, and attention is scarce. Brands are spending more to be seen less. AI has made production cheap for everyone, but it hasn't made anyone's work matter more. There's a split now: the advantage belongs to whoever can own cohesion and still tell a story that lands. Craft rules. Concept wins. Beauty matters.",
     axis:"diag"
   },
   {
     letter:"G", asset:"G", eyebrow:"Who We Are",
-    copy:"Genuinely built for the space in between. Veteran directors, producers, artists and creative leads work with the most advanced AI production tools available, in a cohesive hybrid workflow combining yesterday's traditional production wisdom with tomorrow's tech. A human hand on every decision that matters: story, performance, timing, taste. We're using speed to make more room for craft.",
+    copy:"Genuinely built for the space in between, MAGENTA is a team of veteran directors, producers, artists, and creative leads working with the most advanced AI production tools available, in a cohesive hybrid workflow combining yesterday's production wisdom with tomorrow's tech. A human-led, hands-on workflow that matters. We're using new speed to make more room for old craft.",
     axis:"scale"
   },
   {
     letter:"E", asset:"E", eyebrow:"What We've Done",
-    copy:"Evolved over decades, we've been shaping culture: Emmy-nominated television, AI patents, viral moments, global campaigns. Work for and alongside Jordan Brand, Google, HBO, Netflix, Supreme, KITH, Coca-Cola, Sony, Def Jam, Pharrell, Jay-Z, Tyler the Creator, Kendrick Lamar, Meta, Adobe, a16z, Suno, Eleven Labs, YouTube & more.",
+    copy:"Evolving over decades, we've collectively shaped culture. We've created Emmy-nominated television, AI patents, global campaigns, viral moments... Crafting alongside global icons: Google, HBO, Netflix, Supreme, KITH, Jordan Brand, Coca-Cola, Patron, Sony, Def Jam, Pharrell, Jay-Z, Tyler, The Creator, Kendrick Lamar, Meta, Adobe, A16Z, Suno, ElevenLabs, YouTube, and many, many more.",
     axis:"x"
   },
   {
     letter:"N", asset:"N", eyebrow:"What's Broken",
-    copy:"Naturally, today's agencies are attempting to catch up. Too slow and too expensive to keep pace. Pure AI production is fast, forgettable slop, and audiences feel the difference instantly. Most companies are trapped between the two, with no way to get real craft without the old, heavy overhead. That gap is the market.",
+    copy:"Naturally, today's agencies are chasing ground truth. Traditional production is too slow and too expensive to keep pace, while pure AI production is too fast, often turning out unrefined, forgettable slop. The gap is the market.",
     axis:"y"
   },
   {
     letter:"T", asset:"T", eyebrow:"What We're Building",
-    copy:"Creative Services works with the top brands in the world. Originals builds properties MAGENTA owns outright. Not a marketplace. A studio that makes work people actually want to watch.",
+    copy:"Two arms, one body: that's the model. The \"Creative Services\" arm works in collaboration with top brands, helping redefine current cultural relevance, using new systems and workflows. \"The Originals\" arm builds strategic properties that Magenta owns outright. This is not a marketplace. This is a studio making work that disrupts, resonates, and lasts on two fronts.",
     axis:"y"
   },
   {
     letter:"A", asset:"A2", eyebrow:"Two Divisions, One Standard",
-    copy:"Artistic authenticity is where the halves meet. Originals and Creative Services: what we own, and what we make.",
+    copy:"Artistic authenticity is where the two halves meet: \"MAGENTA O.G.\" and \"MAGENTA C.S.\" We've arrived. This is what we own and what we make. Join us here. Welcome home.",
     axis:"x"
   }
 ];
@@ -2122,47 +2154,23 @@ mm.add({
       }
       return {x,y};
     };
-    const topInsideStage = (el)=>{
-      let y = 0;
-      let node = el;
-      while(node && node !== stage){
-        y += node.offsetTop || 0;
-        node = node.offsetParent;
-      }
-      return y;
-    };
-    const isDivisionsTitle = titleSlot.classList.contains("is-divisions");
-    /* On very large desktop viewports, use the real title slot for the final
-       settled state of the last chapter. This keeps the title and paragraph
-       in the same flex layout, so they cannot overlap regardless of monitor
-       resolution, macOS display scaling, or browser font metrics. */
-    const useDivisionsLockup = largeDesktop && isDivisionsTitle;
+    /* On large desktop screens, use the real flex title for the completed
+       lockup in every chapter—not only the final chapter. The animated title
+       still performs the entrance and docking motion, then hands off to the
+       in-flow title immediately before the paragraph appears. */
+    const useLargeDesktopLockup = largeDesktop;
     const titleTargetScale = ()=>{
       const small = parseFloat(getComputedStyle(titleSlot).fontSize) || 14;
       const large = parseFloat(getComputedStyle(title).fontSize) || 72;
       return small / large;
     };
     const titleTargetX = ()=>centerInsideStage(titleSlot).x - title.offsetLeft;
-    const titleTargetY = ()=>{
-      /* The last title is long enough to wrap at the large source size on
-         some 4K/5K desktop viewports. Position its settled bottom edge from
-         the paragraph's top edge instead of relying on center-to-center
-         alignment. This guarantees that the title remains above the text. */
-      if(largeDesktop && isDivisionsTitle){
-        const styles = getComputedStyle(copy);
-        const gap = parseFloat(styles.rowGap) || parseFloat(styles.gap) || 40;
-        const visualTitleHeight = title.offsetHeight * titleTargetScale();
-        const bodyTop = topInsideStage(bodyCopy) + largeDesktopCopyOffset;
-        const desiredTitleCenter = bodyTop - gap - (visualTitleHeight / 2);
-        return desiredTitleCenter - title.offsetTop;
-      }
-      return centerInsideStage(titleSlot).y - title.offsetTop + largeDesktopCopyOffset;
-    };
+    const titleTargetY = ()=>centerInsideStage(titleSlot).y - title.offsetTop + largeDesktopCopyOffset;
 
     gsap.set(copy,{y:largeDesktopCopyOffset});
     gsap.set(bodyCopy,{opacity:0,y:24});
     gsap.set(title,{x:0,y:0,scale:1,opacity:1});
-    if(useDivisionsLockup){
+    if(useLargeDesktopLockup){
       gsap.set(titleSlot,{visibility:"visible",opacity:0});
     }
 
@@ -2205,20 +2213,21 @@ mm.add({
       .to(b,{x:mobile?0:"-3vw",y:0,rotation:0,scale:1.12,duration:mobile ? .34 : .25,ease:"power2.in"},mobile ? .12 : .08)
       .to(b,{x:0,scale:1,duration:.08,ease:"power3.out"},mobile ? .46 : .33);
 
-    /* The final chapter uses its actual in-flow title once the large morph
-       reaches the lockup. That preserves the exact flex gap above the copy. */
-    if(useDivisionsLockup){
-      tl.to(title,{opacity:0,duration:.045,ease:"none"},.245)
-        .to(titleSlot,{opacity:1,duration:.045,ease:"none"},.245);
+    /* At the end of the desktop docking motion, reveal the real flex title.
+       The title and paragraph then share one layout-controlled gap. */
+    if(useLargeDesktopLockup){
+      tl.to(title,{opacity:0,duration:.035,ease:"none"},.275)
+        .to(titleSlot,{opacity:1,duration:.035,ease:"none"},.275);
     }
 
-    tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},mobile ? .34 : .25);
+    const bodyRevealAt = mobile ? .34 : (useLargeDesktopLockup ? .295 : .25);
+    tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},bodyRevealAt);
 
     /* Hold the completed section almost to the handoff. The following
        section is pulled upward in CSS so its title begins entering after
        roughly half the former post-section gap. */
     const handoffAt = mobile ? (i === SECTIONS.length - 1 ? .93 : .89) : (i === SECTIONS.length - 1 ? .88 : .82);
-    const outgoingCopy = useDivisionsLockup ? [bodyCopy,title,titleSlot] : [bodyCopy,title];
+    const outgoingCopy = useLargeDesktopLockup ? [bodyCopy,title,titleSlot] : [bodyCopy,title];
     tl.to(outgoingCopy,{opacity:0,y:"-=16",duration:.08,ease:"power2.in"},handoffAt)
       .to([r,b],{scale:2.15,y:"-58vh",opacity:0,duration:.12,ease:"power2.in"},handoffAt);
 
