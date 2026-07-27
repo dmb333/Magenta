@@ -1561,23 +1561,44 @@ footer{
 
 
 
-/* ---------- MOBILE OVERLAY + REEL CONTROL FIX v2 ---------- */
-/* Full-screen overlays replace the mobile navigation while open. This prevents
-   the overlay CLOSE control from occupying the same space as CONTACT. */
+/* ---------- MOBILE OVERLAY HEADER + REEL CONTROL FIX v3 ---------- */
+/* Keep the real site header fixed and visible while any mobile overlay scrolls.
+   The overlay close control gets its own row below the header, and all overlay
+   content begins below both rows. These rules are overlay-only and do not alter
+   homepage chapter positioning or animation behavior. */
 @media (max-width:768px){
+  :root{
+    --mobile-overlay-close-top:calc(78px + env(safe-area-inset-top));
+    --mobile-overlay-content-top:calc(148px + env(safe-area-inset-top));
+  }
+
   body.overlay-open nav{
-    opacity:0!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
+    position:fixed!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    z-index:600!important;
+    display:flex!important;
+    opacity:1!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+    mix-blend-mode:normal!important;
+    transform:none!important;
+    background:rgba(10,10,10,.97)!important;
+    border-bottom:1px solid var(--hair);
+  }
+
+  .overlay{
+    padding-top:var(--mobile-overlay-content-top)!important;
   }
 
   .overlay .close,
   #ov-reels .close,
   #ov-team .close{
     position:fixed!important;
-    top:calc(18px + env(safe-area-inset-top))!important;
+    top:var(--mobile-overlay-close-top)!important;
     right:20px!important;
-    z-index:500!important;
+    z-index:550!important;
   }
 }
 
@@ -1610,7 +1631,7 @@ footer{
 .reel-card:focus-visible .reel-play{
   transform:scale(1.06)!important;
 }
-/* ---------- END MOBILE OVERLAY + REEL CONTROL FIX v2 ---------- */
+/* ---------- END MOBILE OVERLAY HEADER + REEL CONTROL FIX v3 ---------- */
 
 </style>
 </head>
