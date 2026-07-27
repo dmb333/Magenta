@@ -1633,89 +1633,6 @@ footer{
 }
 /* ---------- END MOBILE OVERLAY HEADER + REEL CONTROL FIX v3 ---------- */
 
-
-/* ---------- MOBILE OVERLAY HEADER FIX v5 (verified layout) ---------- */
-/* The site navigation stays fixed at the top. Each overlay gets an in-flow,
-   sticky toolbar directly beneath it, so CLOSE never occupies the navigation
-   row and the overlay content cannot slide underneath either control. */
-.overlay-toolbar{display:contents;}
-
-@media (max-width:768px){
-  :root{
-    --mobile-site-header-h:72px;
-    --mobile-overlay-gutter:20px;
-  }
-
-  body.overlay-open nav{
-    position:fixed!important;
-    inset:0 0 auto 0!important;
-    min-height:var(--mobile-site-header-h)!important;
-    z-index:1000!important;
-    display:flex!important;
-    opacity:1!important;
-    visibility:visible!important;
-    transform:none!important;
-    pointer-events:auto!important;
-    mix-blend-mode:normal!important;
-    background:#0A0A0A!important;
-    border-bottom:1px solid var(--hair)!important;
-  }
-
-  body.overlay-open .overlay{
-    z-index:900!important;
-    justify-content:flex-start!important;
-    align-items:stretch!important;
-    overflow-y:auto!important;
-    -webkit-overflow-scrolling:touch;
-    padding-top:var(--mobile-site-header-h)!important;
-    padding-right:var(--mobile-overlay-gutter)!important;
-    padding-bottom:calc(44px + env(safe-area-inset-bottom))!important;
-    padding-left:var(--mobile-overlay-gutter)!important;
-  }
-
-  body.overlay-open .overlay-toolbar{
-    position:sticky!important;
-    top:var(--mobile-site-header-h)!important;
-    z-index:30!important;
-    display:flex!important;
-    flex:0 0 auto!important;
-    align-items:center!important;
-    justify-content:flex-end!important;
-    width:100%!important;
-    min-height:64px!important;
-    margin:0 0 22px!important;
-    padding:10px 0 12px!important;
-    background:#0A0A0A!important;
-    border-bottom:1px solid var(--hair)!important;
-  }
-
-  body.overlay-open .overlay-toolbar .close,
-  body.overlay-open #ov-reels .overlay-toolbar .close,
-  body.overlay-open #ov-team .overlay-toolbar .close{
-    position:static!important;
-    inset:auto!important;
-    z-index:auto!important;
-    margin:0!important;
-    flex:0 0 auto!important;
-  }
-
-  /* Remove older fixed-button offsets and let the toolbar establish spacing. */
-  body.overlay-open #ov-reels,
-  body.overlay-open #ov-team,
-  body.overlay-open .contact-overlay,
-  body.overlay-open .legal-overlay{
-    padding-top:var(--mobile-site-header-h)!important;
-  }
-
-  body.overlay-open #ov-reels .reels-title,
-  body.overlay-open #ov-team .team-intro,
-  body.overlay-open .contact-shell,
-  body.overlay-open .legal-copy{
-    margin-top:0!important;
-  }
-}
-/* ---------- END MOBILE OVERLAY HEADER FIX v5 ---------- */
-
 </style>
 </head>
 <body>
@@ -1734,7 +1651,7 @@ footer{
 </nav>
 
 <div class="overlay" id="ov-reels" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Reels">
-  <div class="overlay-toolbar"><button class="close" type="button" data-close>CLOSE</button></div>
+  <button class="close" type="button" data-close>CLOSE</button>
   <div class="reels-shell">
     <h2 class="reels-title">Reels</h2>
     <div class="reels-catalog">
@@ -1881,7 +1798,7 @@ footer{
   </div>
 </div>
 <div class="overlay" id="ov-team" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Team">
-  <div class="overlay-toolbar"><button class="close" type="button" data-close>CLOSE</button></div>
+  <button class="close" type="button" data-close>CLOSE</button>
   <div class="team-shell">
     <div class="team-intro">
       <h2>Team</h2>
@@ -2014,7 +1931,7 @@ footer{
 </div>
 
 <div class="overlay contact-overlay" id="ov-contact" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="contact-title">
-  <div class="overlay-toolbar"><button class="close" type="button" data-close>CLOSE</button></div>
+  <button class="close" type="button" data-close>CLOSE</button>
   <div class="contact-shell">
     <div class="contact-intro">
       <span class="form-kicker">New business &amp; collaborations</span>
@@ -2093,7 +2010,7 @@ footer{
 </div>
 
 <div class="overlay legal-overlay" id="ov-privacy" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="privacy-title">
-  <div class="overlay-toolbar"><button class="close" type="button" data-close>CLOSE</button></div>
+  <button class="close" type="button" data-close>CLOSE</button>
   <article class="legal-copy">
     <span class="form-kicker">Last updated July 21, 2026</span>
     <h2 id="privacy-title">Privacy Policy</h2>
@@ -2127,7 +2044,7 @@ footer{
 </div>
 
 <div class="overlay legal-overlay" id="ov-terms" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="terms-title">
-  <div class="overlay-toolbar"><button class="close" type="button" data-close>CLOSE</button></div>
+  <button class="close" type="button" data-close>CLOSE</button>
   <article class="legal-copy">
     <span class="form-kicker">Last updated July 21, 2026</span>
     <h2 id="terms-title">Terms of Use</h2>
