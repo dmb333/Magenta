@@ -95,6 +95,7 @@ nav{
   overflow-y:auto;
   overscroll-behavior:contain;
 }
+#ov-reels.player-open{overflow:hidden}
 #ov-reels .close{
   position:fixed;
   top:24px;
@@ -112,36 +113,179 @@ nav{
   line-height:.82;
   text-transform:uppercase;
 }
+.reels-catalog{
+  display:flex;
+  flex-direction:column;
+  gap:68px;
+}
+.reel-category{
+  min-width:0;
+}
+.reel-category-title{
+  margin:0 0 20px;
+  padding-bottom:13px;
+  border-bottom:1px solid var(--hair);
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:clamp(16px,1.55vw,23px);
+  line-height:1;
+  font-weight:700;
+  letter-spacing:.17em;
+  text-transform:uppercase;
+}
 .reels-grid{
   display:grid;
-  grid-template-columns:minmax(0,1fr);
-  gap:48px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:32px 22px;
 }
 .reel-card{
   min-width:0;
-  border-top:1px solid var(--hair);
-  padding-top:18px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--cream);
+  text-align:left;
+  cursor:pointer;
+}
+.reel-card:focus-visible{
+  outline:2px solid var(--magenta);
+  outline-offset:6px;
 }
 .reel-media{
+  position:relative;
   width:100%;
   aspect-ratio:16/9;
   overflow:hidden;
   background:#000;
 }
-.reel-media video{
+.reel-media img{
   display:block;
   width:100%;
   height:100%;
-  object-fit:contain;
+  object-fit:cover;
   background:#000;
+  transition:transform .35s ease,opacity .35s ease;
 }
-.reel-card h3{
-  margin:18px 0 0;
+.reel-play{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:58px;
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:50%;
+  background:rgba(0,0,0,.45);
+  color:#fff;
+  transform:translate(-50%,-50%);
+  transition:border-color .25s ease,background-color .25s ease,transform .25s ease;
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+.reel-play svg{
+  width:18px;
+  height:18px;
+  margin-left:3px;
+  fill:currentColor;
+}
+.reel-card:hover .reel-media img{
+  transform:scale(1.025);
+  opacity:.78;
+}
+.reel-card:hover .reel-play,
+.reel-card:focus-visible .reel-play{
+  border-color:var(--magenta);
+  background:rgba(255,0,255,.16);
+  transform:translate(-50%,-50%) scale(1.06);
+}
+.reel-card-title{
+  display:block;
+  margin-top:13px;
   font-family:Helvetica,Arial,sans-serif;
-  font-size:clamp(24px,2.2vw,38px);
-  line-height:1;
+  font-size:clamp(18px,1.55vw,25px);
+  line-height:1.12;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.reel-player-modal{
+  position:fixed;
+  inset:0;
+  z-index:14;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:38px;
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease,visibility .25s ease;
+}
+.reel-player-modal.is-open{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+.reel-player-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  backdrop-filter:blur(9px);
+  -webkit-backdrop-filter:blur(9px);
+}
+.reel-player-panel{
+  position:relative;
+  z-index:1;
+  width:min(1180px,94vw);
+}
+.reel-player-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:14px;
+}
+#ov-reels .reel-player-header h3{
+  margin:0;
+  font-family:Helvetica,Arial,sans-serif;
+  font-size:clamp(20px,2vw,31px);
+  line-height:1.05;
   font-weight:700;
   letter-spacing:-.025em;
+  text-transform:none;
+}
+.reel-player-close{
+  flex:0 0 auto;
+  border:1px solid var(--hair);
+  background:var(--ink);
+  color:var(--cream);
+  padding:11px 15px;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:10px;
+  letter-spacing:.22em;
+  cursor:pointer;
+  transition:border-color .2s ease,color .2s ease;
+}
+.reel-player-close:hover,
+.reel-player-close:focus-visible{
+  border-color:var(--magenta);
+  color:var(--magenta);
+}
+.reel-player-frame{
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
+  box-shadow:0 28px 90px rgba(0,0,0,.55);
+}
+.reel-player-frame iframe{
+  display:block;
+  width:100%;
+  height:100%;
+  border:0;
+  background:#000;
+}
+@media (max-width:980px){
+  .reels-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:600px){
   #ov-reels{padding:86px 20px 44px}
@@ -150,8 +294,16 @@ nav{
     margin-bottom:30px;
     font-size:clamp(58px,22vw,94px);
   }
-  .reel-card{padding-top:14px}
-  .reel-card h3{margin-top:14px;font-size:25px}
+  .reels-catalog{gap:52px}
+  .reel-category-title{font-size:15px;line-height:1.25}
+  .reels-grid{grid-template-columns:1fr;gap:30px}
+  .reel-card-title{font-size:22px}
+  .reel-play{width:52px;height:52px}
+  .reel-player-modal{padding:16px}
+  .reel-player-panel{width:100%}
+  .reel-player-header{align-items:flex-start;gap:16px}
+  #ov-reels .reel-player-header h3{font-size:21px}
+  .reel-player-close{padding:10px 11px;font-size:9px}
 }
 
 /* ---------- team overlay ---------- */
@@ -1427,25 +1579,146 @@ footer{
   <button class="close" type="button" data-close>CLOSE</button>
   <div class="reels-shell">
     <h2 class="reels-title">Reels</h2>
-    <div class="reels-grid">
-      <article class="reel-card">
-        <div class="reel-media">
-          <video controls playsinline preload="metadata" poster="commercials-poster.jpg" aria-label="Commercials reel">
-            <source src="Commercials.mp4" type="video/mp4">
-            Your browser does not support HTML5 video.
-          </video>
+    <div class="reels-catalog">
+      <section class="reel-category" aria-labelledby="reel-category-music-video-reel">
+        <h3 class="reel-category-title" id="reel-category-music-video-reel">Music Video Reel</h3>
+        <div class="reels-grid">
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Goldwatch Music Video Reel"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/1205220129199a0711a3755cfeb3daa4/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F1205220129199a0711a3755cfeb3daa4%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D30s%26height%3D600"
+          aria-label="Play Goldwatch Music Video Reel">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/1205220129199a0711a3755cfeb3daa4/thumbnails/thumbnail.jpg?time=30s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Goldwatch Music Video Reel</span>
+        </button>
         </div>
-        <h3>Commercials</h3>
-      </article>
-      <article class="reel-card">
-        <div class="reel-media">
-          <video controls playsinline preload="metadata" poster="music-videos-poster.jpg" aria-label="Music Videos reel">
-            <source src="Music_Videos.mp4" type="video/mp4">
-            Your browser does not support HTML5 video.
-          </video>
+      </section>
+      <section class="reel-category" aria-labelledby="reel-category-commercials">
+        <h3 class="reel-category-title" id="reel-category-commercials">Commercials</h3>
+        <div class="reels-grid">
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Squarespace with Eric Ripert"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/66731b0e96143d6988af6b65927de417/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F66731b0e96143d6988af6b65927de417%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D8s%26height%3D600"
+          aria-label="Play Squarespace with Eric Ripert">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/66731b0e96143d6988af6b65927de417/thumbnails/thumbnail.jpg?time=8s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Squarespace with Eric Ripert</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Tuft &amp; Needle"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/dca64f62e81717bb297f39b455837679/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fdca64f62e81717bb297f39b455837679%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D8s%26height%3D600"
+          aria-label="Play Tuft &amp; Needle">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/dca64f62e81717bb297f39b455837679/thumbnails/thumbnail.jpg?time=8s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Tuft &amp; Needle</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Google Glass with Roy Choi"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/22a159a0b568d9461189cd1ebbde8d12/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F22a159a0b568d9461189cd1ebbde8d12%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D3s%26height%3D600"
+          aria-label="Play Google Glass with Roy Choi">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/22a159a0b568d9461189cd1ebbde8d12/thumbnails/thumbnail.jpg?time=3s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Google Glass with Roy Choi</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Patrol Tequila with Marcus Samuelson"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/c26014281e722e91e16241067e2ef1c8/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fc26014281e722e91e16241067e2ef1c8%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D16s%26height%3D600"
+          aria-label="Play Patrol Tequila with Marcus Samuelson">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/c26014281e722e91e16241067e2ef1c8/thumbnails/thumbnail.jpg?time=16s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Patrol Tequila with Marcus Samuelson</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Toyota Music in Motion"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/dd069611f1cb0eb5b746c6dbd052e4f4/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fdd069611f1cb0eb5b746c6dbd052e4f4%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D36s%26height%3D600"
+          aria-label="Play Toyota Music in Motion">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/dd069611f1cb0eb5b746c6dbd052e4f4/thumbnails/thumbnail.jpg?time=36s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Toyota Music in Motion</span>
+        </button>
         </div>
-        <h3>Music Videos</h3>
-      </article>
+      </section>
+      <section class="reel-category" aria-labelledby="reel-category-television">
+        <h3 class="reel-category-title" id="reel-category-television">Television</h3>
+        <div class="reels-grid">
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Avec Eric Season 03 Highlight Reel"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/da8b1c68f9888c7473f1e4fa40841b2d/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fda8b1c68f9888c7473f1e4fa40841b2d%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D1m43s%26height%3D600"
+          aria-label="Play Avec Eric Season 03 Highlight Reel">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/da8b1c68f9888c7473f1e4fa40841b2d/thumbnails/thumbnail.jpg?time=1m43s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Avec Eric Season 03 Highlight Reel</span>
+        </button>
+        </div>
+      </section>
+      <section class="reel-category" aria-labelledby="reel-category-web-series">
+        <h3 class="reel-category-title" id="reel-category-web-series">Web Series</h3>
+        <div class="reels-grid">
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Time Alone with Mac Miller"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/4564fa3936e72abb745bf7346442c9f5/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F4564fa3936e72abb745bf7346442c9f5%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D49s%26height%3D600"
+          aria-label="Play Time Alone with Mac Miller">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/4564fa3936e72abb745bf7346442c9f5/thumbnails/thumbnail.jpg?time=49s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Time Alone with Mac Miller</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Time Pieces with Pharrell"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/9048f9d41ea1ee343905bcb877a77f39/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F9048f9d41ea1ee343905bcb877a77f39%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D56s%26height%3D600"
+          aria-label="Play Time Pieces with Pharrell">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/9048f9d41ea1ee343905bcb877a77f39/thumbnails/thumbnail.jpg?time=56s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Time Pieces with Pharrell</span>
+        </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="reel-player-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="reel-player-title">
+    <div class="reel-player-backdrop" data-reel-close></div>
+    <div class="reel-player-panel" role="document">
+      <div class="reel-player-header">
+        <h3 id="reel-player-title"></h3>
+        <button class="reel-player-close" type="button" data-reel-close>CLOSE PLAYER</button>
+      </div>
+      <div class="reel-player-frame"></div>
     </div>
   </div>
 </div>
@@ -2010,6 +2283,57 @@ document.querySelectorAll("[data-overlay]").forEach(btn=>{
 document.querySelectorAll("[data-close]").forEach(btn=>{
   btn.addEventListener("click",()=>closeOverlay(btn.closest(".overlay")));
 });
+
+
+/* ---------------- reels player ---------------- */
+const reelsOverlay=document.getElementById("ov-reels");
+const reelPlayerModal=reelsOverlay?.querySelector(".reel-player-modal");
+const reelPlayerFrame=reelPlayerModal?.querySelector(".reel-player-frame");
+const reelPlayerTitle=reelPlayerModal?.querySelector("#reel-player-title");
+let activeReelTrigger=null;
+
+function openReelPlayer(trigger){
+  if(!reelPlayerModal || !reelPlayerFrame || !reelPlayerTitle) return;
+  activeReelTrigger=trigger;
+  reelPlayerTitle.textContent=trigger.dataset.reelTitle || "Reel";
+
+  const iframe=document.createElement("iframe");
+  iframe.src=trigger.dataset.reelSrc;
+  iframe.title=trigger.dataset.reelTitle || "Reel";
+  iframe.loading="eager";
+  iframe.allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture";
+  iframe.allowFullscreen=true;
+
+  reelPlayerFrame.replaceChildren(iframe);
+  reelPlayerModal.classList.add("is-open");
+  reelPlayerModal.setAttribute("aria-hidden","false");
+  reelsOverlay?.classList.add("player-open");
+  reelPlayerModal.querySelector(".reel-player-close")?.focus();
+}
+
+function closeReelPlayer(){
+  if(!reelPlayerModal || !reelPlayerFrame) return;
+  reelPlayerModal.classList.remove("is-open");
+  reelPlayerModal.setAttribute("aria-hidden","true");
+  reelPlayerFrame.replaceChildren();
+  reelsOverlay?.classList.remove("player-open");
+  if(activeReelTrigger && document.contains(activeReelTrigger)) activeReelTrigger.focus();
+  activeReelTrigger=null;
+}
+
+document.querySelectorAll("[data-reel-open]").forEach(btn=>{
+  btn.addEventListener("click",()=>openReelPlayer(btn));
+});
+document.querySelectorAll("[data-reel-close]").forEach(btn=>{
+  btn.addEventListener("click",closeReelPlayer);
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && reelPlayerModal?.classList.contains("is-open")){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    closeReelPlayer();
+  }
+},true);
 
 const bioOpeners=[...document.querySelectorAll("[data-bio-open]")];
 let activeBioTrigger=null;
