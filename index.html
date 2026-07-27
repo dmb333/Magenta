@@ -152,6 +152,7 @@ nav{
 }
 .reel-media{
   position:relative;
+  display:block;
   width:100%;
   aspect-ratio:16/9;
   overflow:hidden;
@@ -289,7 +290,7 @@ nav{
 }
 @media (max-width:600px){
   #ov-reels{padding:86px 20px 44px}
-  #ov-reels .close{top:18px;right:20px}
+  #ov-reels .close{top:calc(72px + env(safe-area-inset-top));right:20px}
   #ov-reels .reels-title{
     margin-bottom:30px;
     font-size:clamp(58px,22vw,94px);
@@ -542,7 +543,7 @@ nav{
 }
 @media (max-width:600px){
   #ov-team{padding:86px 20px 44px}
-  #ov-team .close{top:18px;right:20px}
+  #ov-team .close{top:calc(72px + env(safe-area-inset-top));right:20px}
   #ov-team .team-intro h2{font-size:clamp(58px,22vw,94px)}
   #ov-team .team-intro p{font-size:14px}
   .team-grid{grid-template-columns:1fr;gap:44px}
@@ -1287,7 +1288,7 @@ footer{
   .legal-copy h2{font-size:clamp(56px,18vw,90px)}
   .contact-intro p{margin-top:20px}
   .form-row.two-col{grid-template-columns:1fr;gap:24px}
-  .overlay .close{top:18px;right:20px}
+  .overlay .close{top:calc(72px + env(safe-area-inset-top));right:20px}
   footer{
     padding:72px 7vw calc(22px + env(safe-area-inset-bottom));
   }
@@ -1557,6 +1558,59 @@ footer{
     transform:none !important;
   }
 }
+
+
+
+/* ---------- MOBILE OVERLAY + REEL CONTROL FIX v2 ---------- */
+/* Full-screen overlays replace the mobile navigation while open. This prevents
+   the overlay CLOSE control from occupying the same space as CONTACT. */
+@media (max-width:768px){
+  body.overlay-open nav{
+    opacity:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+
+  .overlay .close,
+  #ov-reels .close,
+  #ov-team .close{
+    position:fixed!important;
+    top:calc(18px + env(safe-area-inset-top))!important;
+    right:20px!important;
+    z-index:500!important;
+  }
+}
+
+/* Use a one-cell grid for the poster and play control. This centers the control
+   against the actual thumbnail box and avoids mobile absolute-position drift. */
+.reel-card{
+  display:block!important;
+  width:100%!important;
+}
+.reel-media{
+  display:grid!important;
+  place-items:center!important;
+}
+.reel-media > img,
+.reel-media > .reel-play{
+  grid-area:1 / 1!important;
+}
+.reel-media > .reel-play{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  z-index:2!important;
+  justify-self:center!important;
+  align-self:center!important;
+  transform:none!important;
+}
+.reel-card:hover .reel-play,
+.reel-card:focus-visible .reel-play{
+  transform:scale(1.06)!important;
+}
+/* ---------- END MOBILE OVERLAY + REEL CONTROL FIX v2 ---------- */
 
 </style>
 </head>
