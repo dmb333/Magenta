@@ -1563,6 +1563,21 @@ footer{
     flex:0 0 auto;
     transform:none !important;
   }
+
+  /* Extra separation for the final A chapter on large Mac / desktop screens. */
+  .letter-section:last-of-type .sec-copy{
+    --chapter-title-body-gap:clamp(58px,5.4vh,96px) !important;
+  }
+  .letter-section:last-of-type .sec-copy .eyebrow-slot.is-divisions{
+    width:min(78vw,920px) !important;
+    max-width:min(78vw,920px) !important;
+    font-size:clamp(12px,.92vw,15px) !important;
+    line-height:1.32 !important;
+    letter-spacing:.24em !important;
+  }
+  .letter-section:last-of-type .sec-copy p{
+    width:min(980px,80vw) !important;
+  }
 }
 
 
@@ -2802,6 +2817,7 @@ mm.add({
        The animated title still performs the centered-to-small morph, then
        crossfades into the in-flow title slot. This removes the separate
        transformed resting position that was breaking on large Mac displays. */
+    const isFinalDivisions = SECTIONS[i].asset === "A2";
     const useDesktopTitleLockup = largeDesktop;
     const titleTargetScale = ()=>{
       const small = parseFloat(getComputedStyle(titleSlot).fontSize) || 14;
@@ -2860,11 +2876,12 @@ mm.add({
     /* On large desktop screens, hand every title off to its real in-flow
        title element only after the morph has reached the reserved slot. */
     if(useDesktopTitleLockup){
-      tl.to(title,{opacity:0,duration:.045,ease:"none"},.28)
-        .to(titleSlot,{opacity:1,duration:.045,ease:"none"},.28);
+      const titleHandoffAt = isFinalDivisions ? .18 : .28;
+      tl.to(title,{opacity:0,duration:.045,ease:"none"},titleHandoffAt)
+        .to(titleSlot,{opacity:1,duration:.045,ease:"none"},titleHandoffAt);
     }
 
-    const bodyInAt = useDesktopTitleLockup ? .31 : (mobile ? .34 : .25);
+    const bodyInAt = useDesktopTitleLockup ? (isFinalDivisions ? .24 : .31) : (mobile ? .34 : .25);
     tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},bodyInAt);
 
     /* Hold the completed section almost to the handoff. The following
