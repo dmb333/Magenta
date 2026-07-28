@@ -158,6 +158,12 @@ nav{
   overflow:hidden;
   background:#000;
 }
+.reel-media--vertical{
+  background:#050505;
+}
+.reel-media--vertical img{
+  object-fit:contain;
+}
 .reel-media img{
   display:block;
   width:100%;
@@ -1561,49 +1567,116 @@ footer{
 
 
 
-/* ---------- MOBILE OVERLAY HEADER + REEL CONTROL FIX v3 ---------- */
-/* Keep the real site header fixed and visible while any mobile overlay scrolls.
-   The overlay close control gets its own row below the header, and all overlay
-   content begins below both rows. These rules are overlay-only and do not alter
-   homepage chapter positioning or animation behavior. */
-@media (max-width:768px){
-  :root{
-    --mobile-overlay-close-top:calc(78px + env(safe-area-inset-top));
-    --mobile-overlay-content-top:calc(148px + env(safe-area-inset-top));
-  }
+/* ---------- MOBILE OVERLAY STICKY HEADER + REEL CONTROL FIX v4 ---------- */
+/* The overlay header now lives inside each overlay's own scroll container.
+   This avoids iOS Safari's fixed-position/clip-path compositing conflict and
+   makes the content offset part of normal document flow instead of a guessed
+   pixel reserve. Homepage layout and animation rules remain untouched. */
+.mobile-overlay-header{display:none;}
 
-  body.overlay-open nav{
-    position:fixed!important;
-    top:0!important;
-    left:0!important;
-    right:0!important;
-    z-index:600!important;
-    display:flex!important;
-    opacity:1!important;
-    visibility:visible!important;
-    pointer-events:auto!important;
-    mix-blend-mode:normal!important;
-    transform:none!important;
-    background:rgba(10,10,10,.97)!important;
-    border-bottom:1px solid var(--hair);
+@media (max-width:768px){
+  /* The desktop/global navigation remains unchanged on the homepage. While an
+     overlay is open, the overlay's own sticky copy becomes the visible header. */
+  body.overlay-open > nav{
+    opacity:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
   }
 
   .overlay{
-    padding-top:var(--mobile-overlay-content-top)!important;
+    justify-content:flex-start!important;
+    align-items:stretch!important;
+    padding-top:0!important;
   }
 
-  .overlay .close,
-  #ov-reels .close,
-  #ov-team .close{
-    position:fixed!important;
-    top:var(--mobile-overlay-close-top)!important;
-    right:20px!important;
-    z-index:550!important;
+  /* Hide the old floating close button only on mobile; desktop keeps it. */
+  .overlay > .close{display:none!important;}
+
+  .mobile-overlay-header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    flex:0 0 auto;
+    display:block;
+    width:100%;
+    margin:0 0 34px;
+    padding:calc(14px + env(safe-area-inset-top)) 0 12px;
+    background:rgba(10,10,10,.985);
+    border-bottom:1px solid var(--hair);
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px);
+  }
+
+  .mobile-overlay-header-main{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    min-height:36px;
+  }
+
+  .mobile-overlay-home{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    border:0;
+    background:none;
+    padding:0;
+    color:var(--cream);
+    cursor:pointer;
+  }
+  .mobile-overlay-home img{display:block;width:auto;height:32px;}
+
+  .mobile-overlay-links{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:clamp(12px,4vw,20px);
+    min-width:0;
+  }
+  .mobile-overlay-links button{
+    border:0;
+    background:none;
+    padding:8px 0;
+    color:var(--cream);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10px;
+    font-weight:400;
+    line-height:1;
+    letter-spacing:.24em;
+    white-space:nowrap;
+    cursor:pointer;
+  }
+  .mobile-overlay-links button[aria-current="page"]{color:var(--magenta);}
+
+  .mobile-overlay-close-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:7px;
+  }
+  .mobile-overlay-close{
+    border:1px solid var(--hair);
+    background:transparent;
+    color:var(--cream);
+    padding:8px 12px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:9px;
+    line-height:1;
+    letter-spacing:.24em;
+    cursor:pointer;
+  }
+
+  /* The sticky header stays in normal flow, so every overlay's first heading
+     starts below it without per-page top coordinates. */
+  #ov-reels .reels-title,
+  #ov-team .team-intro,
+  .contact-overlay .contact-shell,
+  .legal-overlay .legal-shell{
+    scroll-margin-top:130px;
   }
 }
 
-/* Use a one-cell grid for the poster and play control. This centers the control
-   against the actual thumbnail box and avoids mobile absolute-position drift. */
+/* Use a one-cell grid for the poster and play control. */
 .reel-card{
   display:block!important;
   width:100%!important;
@@ -1631,7 +1704,7 @@ footer{
 .reel-card:focus-visible .reel-play{
   transform:scale(1.06)!important;
 }
-/* ---------- END MOBILE OVERLAY HEADER + REEL CONTROL FIX v3 ---------- */
+/* ---------- END MOBILE OVERLAY STICKY HEADER + REEL CONTROL FIX v4 ---------- */
 
 </style>
 </head>
@@ -1652,6 +1725,21 @@ footer{
 
 <div class="overlay" id="ov-reels" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Reels">
   <button class="close" type="button" data-close>CLOSE</button>
+  <div class="mobile-overlay-header" aria-label="Overlay navigation">
+    <div class="mobile-overlay-header-main">
+      <button class="mobile-overlay-home" type="button" data-mobile-home aria-label="Return to homepage">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAB4CAMAAACQAMFAAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAABjUExURe/q59/c2VxdXdvY1vDs6ePf3cnGxNfT0uXh3uvm5KWko+Dd2ujk4b67u+nl4s7MyvHs6vDr6PHt6t7a2K+tre7q57+9u+7q5+Pf3efj4LOysPLu7Pbx7vfy8Pjz8Pjy7////3XM6ZEAAAAbdFJOU9mJAVL6mXBYyNUMp+cguyr25+55SPUm8pD7E7rz1xQAAAABYktHRCCzaz2AAAAAB3RJTUUH6gcGFSIPwaArogAAA+tJREFUWMOdmOuCoyAMRrEWx3rDVrqdXezu+7/lgvbyQUIc23/WHhE4TUKUctynOLw+5ZH9hVIz99FvsGJ/8APwaxdYv0HN3b/nwFPzAttdYNe/wGHXq3bmyTX1LnB8g+q+BzyWT7A/7xrRvUBz2QXO0xO04z7w5Vzp9oEvdXjj8mD7BKed4PDpiPXTuXYnqBrRuKyr87kXjcuPeDFP43aCo30Y1+0En85ljMuDcyUaJ4CTaJwAFuL+C6AWjdsGi91gLQRHERwaSVUBfMjKqyq4ej8bSdU8OF+NpKoArrLmVBXAVdacqsLirLKacT/4JakqgYs61QdgK6kqgYOkqgQuAVLnwS53a3Gu/QBcsvnwCWjyqgZzsmDI5jlVRfD4K5vHZTDIam4fgLPNR1UCOvxhESpHmPNRAEe80rGq6iqBuIptrGodzTcBr7hvQ6yq7gTwgm56WeHSRWD6qpcCJuUjK6g6FuKIEyyrtxxUvZYiWEFw8rLClM8lLg55VXzszTQnGL+UVvViYT9G28DN2sogvJwrDdwcRPBmYDlchVFV26sIYqyYLOhZGBn8hqsCw7E1kqs3g3ZqAP2E5RHx/9CCqqPdAPHtBo13NkBcyBrArt8CwTkFm3pqNkBMwZ36+x79sAGinkfc/y3wkIndOknOFMzkp0IescuCdhPkU6kP6/0og3zy9lWP2QD5csEfClLwkoAY9eFGT8BbAvZsnvGn9BT8nYAYLt6f4UDAawLySbj9AciqoykYXYbqli00pg0wVBpsaVMtoHM5MIzIObfUAyOmyACOLgI550LpYkZVXgE8uvb9nPCq3KEofG9vFdQSTrmhHKMRudo21HVWN2CVd9VCvA4gV6KEStJYfKZTE16e//BF0UCOdk75IeYI5MqwxwmtjMEiBjnnCtL3SsGeLzUnciYMoI5Bxjm//yYutO8cSJ3zSV0zYJ2A1LmL+R6Sw6QHmxSkrT9V3drkMBlAlYDUuU7N33RETDMLyJ6npuQU6kFMbAvIlsXhbNfEr4r/7AXknFv6dDgpD9oU5JxbDr5YaHkQp7SAnHPkiR6sCMg4txy0MOR6ELPM2h1l4tzSh8BE58GCgEyc02lvx4OagDoD/jpGYEtAJs6Rk7YHBwJaClbpSdupaA1XkDq3dhPwgR5UBKTOrZ3hKQJ77BGvYFxfLN+bdO5OmTMZkebWtblTxeCFgNS5tfepIzCa0AMk6gykDeVUSUFaz+kDHTGqax4gUacg/SufO+YfgBX2r/6t4DcDps6t+x+p4pRmwLSeG0nj686DaT3X0Y6ZUzUDprKu+49x1I94YsBU1nX/TQx2DJgGSE27wu4/UX5ow4Ku7LoAAAAASUVORK5CYII=" alt="" aria-hidden="true">
+      </button>
+      <div class="mobile-overlay-links">
+        <button type="button" data-overlay-switch="reels" aria-current="page">REELS</button>
+        <button type="button" data-overlay-switch="team">TEAM</button>
+        <button type="button" data-overlay-switch="contact">CONTACT</button>
+      </div>
+    </div>
+    <div class="mobile-overlay-close-row">
+      <button class="mobile-overlay-close" type="button" data-close>CLOSE</button>
+    </div>
+  </div>
   <div class="reels-shell">
     <h2 class="reels-title">Reels</h2>
     <div class="reels-catalog">
@@ -1659,16 +1747,141 @@ footer{
         <h3 class="reel-category-title" id="reel-category-music-video-reel">Music Video Reel</h3>
         <div class="reels-grid">
         <button class="reel-card" type="button" data-reel-open
-          data-reel-title="Goldwatch Music Video Reel"
-          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/1205220129199a0711a3755cfeb3daa4/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F1205220129199a0711a3755cfeb3daa4%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D30s%26height%3D600"
-          aria-label="Play Goldwatch Music Video Reel">
+          data-reel-title="Music Video Reel"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e478e06c79a2de77360d9cf06832f765/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fe478e06c79a2de77360d9cf06832f765%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D%26height%3D600"
+          aria-label="Play Music Video Reel">
           <span class="reel-media">
-            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/1205220129199a0711a3755cfeb3daa4/thumbnails/thumbnail.jpg?time=30s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e478e06c79a2de77360d9cf06832f765/thumbnails/thumbnail.jpg?height=600" alt="" loading="lazy" decoding="async">
             <span class="reel-play" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
             </span>
           </span>
-          <span class="reel-card-title">Goldwatch Music Video Reel</span>
+          <span class="reel-card-title">Music Video Reel</span>
+        </button>
+        </div>
+      </section>
+      <section class="reel-category" aria-labelledby="reel-category-ai">
+        <h3 class="reel-category-title" id="reel-category-ai">AI</h3>
+        <div class="reels-grid">
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Babyteeth by Elken"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/f6dbbe248ef508807f9f9dcb930473e0/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Ff6dbbe248ef508807f9f9dcb930473e0%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D29s%26height%3D600"
+          aria-label="Play Babyteeth by Elken">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/f6dbbe248ef508807f9f9dcb930473e0/thumbnails/thumbnail.jpg?time=29s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Babyteeth by Elken</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Writers Room"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e8d1616cbe7f6297e922b4bdf59f3fee/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fe8d1616cbe7f6297e922b4bdf59f3fee%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D7s%26height%3D600"
+          aria-label="Play Writers Room">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e8d1616cbe7f6297e922b4bdf59f3fee/thumbnails/thumbnail.jpg?time=7s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Writers Room</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Sequence"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/f0e9a935faaa91ffcc25d14ddd9f0a3c/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Ff0e9a935faaa91ffcc25d14ddd9f0a3c%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D20s%26height%3D600"
+          aria-label="Play Sequence">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/f0e9a935faaa91ffcc25d14ddd9f0a3c/thumbnails/thumbnail.jpg?time=20s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Sequence</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="1804"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/3b3d67e4bb5c8d8cbf6b3e80ef79dab3/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F3b3d67e4bb5c8d8cbf6b3e80ef79dab3%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D5s%26height%3D600"
+          aria-label="Play 1804">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/3b3d67e4bb5c8d8cbf6b3e80ef79dab3/thumbnails/thumbnail.jpg?time=5s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">1804</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Greg Yuna"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/a937a3f3ac55fd8caea789d29e004948/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fa937a3f3ac55fd8caea789d29e004948%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D3s%26height%3D600"
+          aria-label="Play Greg Yuna">
+          <span class="reel-media reel-media--vertical">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/a937a3f3ac55fd8caea789d29e004948/thumbnails/thumbnail.jpg?time=3s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Greg Yuna</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="BBL Drizzyverse"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/785a0b9db1fe7abf8448243fd8be2d7f/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F785a0b9db1fe7abf8448243fd8be2d7f%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D24s%26height%3D600"
+          aria-label="Play BBL Drizzyverse">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/785a0b9db1fe7abf8448243fd8be2d7f/thumbnails/thumbnail.jpg?time=24s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">BBL Drizzyverse</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Freaky Thangs"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/bf8bbd4b8d48636a78cba336eeb86205/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fbf8bbd4b8d48636a78cba336eeb86205%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D16s%26height%3D600"
+          aria-label="Play Freaky Thangs">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/bf8bbd4b8d48636a78cba336eeb86205/thumbnails/thumbnail.jpg?time=16s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Freaky Thangs</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Bio Buff"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/4258bc82b63c9c4f1ce260d5de9c8fe8/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F4258bc82b63c9c4f1ce260d5de9c8fe8%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D20s%26height%3D600"
+          aria-label="Play Bio Buff">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/4258bc82b63c9c4f1ce260d5de9c8fe8/thumbnails/thumbnail.jpg?time=20s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Bio Buff</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="I Think I Love Her"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/77356fc927d81bf413bb3805ab9aba7f/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2F77356fc927d81bf413bb3805ab9aba7f%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D32s%26height%3D600"
+          aria-label="Play I Think I Love Her">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/77356fc927d81bf413bb3805ab9aba7f/thumbnails/thumbnail.jpg?time=32s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">I Think I Love Her</span>
+        </button>
+        <button class="reel-card" type="button" data-reel-open
+          data-reel-title="Walk Master"
+          data-reel-src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e09ba34b097acebb10ad9ba28f6765a9/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fe09ba34b097acebb10ad9ba28f6765a9%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D25s%26height%3D600"
+          aria-label="Play Walk Master">
+          <span class="reel-media">
+            <img src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e09ba34b097acebb10ad9ba28f6765a9/thumbnails/thumbnail.jpg?time=25s&amp;height=600" alt="" loading="lazy" decoding="async">
+            <span class="reel-play" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+            </span>
+          </span>
+          <span class="reel-card-title">Walk Master</span>
         </button>
         </div>
       </section>
@@ -1799,6 +2012,21 @@ footer{
 </div>
 <div class="overlay" id="ov-team" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Team">
   <button class="close" type="button" data-close>CLOSE</button>
+  <div class="mobile-overlay-header" aria-label="Overlay navigation">
+    <div class="mobile-overlay-header-main">
+      <button class="mobile-overlay-home" type="button" data-mobile-home aria-label="Return to homepage">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAB4CAMAAACQAMFAAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAABjUExURe/q59/c2VxdXdvY1vDs6ePf3cnGxNfT0uXh3uvm5KWko+Dd2ujk4b67u+nl4s7MyvHs6vDr6PHt6t7a2K+tre7q57+9u+7q5+Pf3efj4LOysPLu7Pbx7vfy8Pjz8Pjy7////3XM6ZEAAAAbdFJOU9mJAVL6mXBYyNUMp+cguyr25+55SPUm8pD7E7rz1xQAAAABYktHRCCzaz2AAAAAB3RJTUUH6gcGFSIPwaArogAAA+tJREFUWMOdmOuCoyAMRrEWx3rDVrqdXezu+7/lgvbyQUIc23/WHhE4TUKUctynOLw+5ZH9hVIz99FvsGJ/8APwaxdYv0HN3b/nwFPzAttdYNe/wGHXq3bmyTX1LnB8g+q+BzyWT7A/7xrRvUBz2QXO0xO04z7w5Vzp9oEvdXjj8mD7BKed4PDpiPXTuXYnqBrRuKyr87kXjcuPeDFP43aCo30Y1+0En85ljMuDcyUaJ4CTaJwAFuL+C6AWjdsGi91gLQRHERwaSVUBfMjKqyq4ej8bSdU8OF+NpKoArrLmVBXAVdacqsLirLKacT/4JakqgYs61QdgK6kqgYOkqgQuAVLnwS53a3Gu/QBcsvnwCWjyqgZzsmDI5jlVRfD4K5vHZTDIam4fgLPNR1UCOvxhESpHmPNRAEe80rGq6iqBuIptrGodzTcBr7hvQ6yq7gTwgm56WeHSRWD6qpcCJuUjK6g6FuKIEyyrtxxUvZYiWEFw8rLClM8lLg55VXzszTQnGL+UVvViYT9G28DN2sogvJwrDdwcRPBmYDlchVFV26sIYqyYLOhZGBn8hqsCw7E1kqs3g3ZqAP2E5RHx/9CCqqPdAPHtBo13NkBcyBrArt8CwTkFm3pqNkBMwZ36+x79sAGinkfc/y3wkIndOknOFMzkp0IescuCdhPkU6kP6/0og3zy9lWP2QD5csEfClLwkoAY9eFGT8BbAvZsnvGn9BT8nYAYLt6f4UDAawLySbj9AciqoykYXYbqli00pg0wVBpsaVMtoHM5MIzIObfUAyOmyACOLgI550LpYkZVXgE8uvb9nPCq3KEofG9vFdQSTrmhHKMRudo21HVWN2CVd9VCvA4gV6KEStJYfKZTE16e//BF0UCOdk75IeYI5MqwxwmtjMEiBjnnCtL3SsGeLzUnciYMoI5Bxjm//yYutO8cSJ3zSV0zYJ2A1LmL+R6Sw6QHmxSkrT9V3drkMBlAlYDUuU7N33RETDMLyJ6npuQU6kFMbAvIlsXhbNfEr4r/7AXknFv6dDgpD9oU5JxbDr5YaHkQp7SAnHPkiR6sCMg4txy0MOR6ELPM2h1l4tzSh8BE58GCgEyc02lvx4OagDoD/jpGYEtAJs6Rk7YHBwJaClbpSdupaA1XkDq3dhPwgR5UBKTOrZ3hKQJ77BGvYFxfLN+bdO5OmTMZkebWtblTxeCFgNS5tfepIzCa0AMk6gykDeVUSUFaz+kDHTGqax4gUacg/SufO+YfgBX2r/6t4DcDps6t+x+p4pRmwLSeG0nj686DaT3X0Y6ZUzUDprKu+49x1I94YsBU1nX/TQx2DJgGSE27wu4/UX5ow4Ku7LoAAAAASUVORK5CYII=" alt="" aria-hidden="true">
+      </button>
+      <div class="mobile-overlay-links">
+        <button type="button" data-overlay-switch="reels">REELS</button>
+        <button type="button" data-overlay-switch="team" aria-current="page">TEAM</button>
+        <button type="button" data-overlay-switch="contact">CONTACT</button>
+      </div>
+    </div>
+    <div class="mobile-overlay-close-row">
+      <button class="mobile-overlay-close" type="button" data-close>CLOSE</button>
+    </div>
+  </div>
   <div class="team-shell">
     <div class="team-intro">
       <h2>Team</h2>
@@ -1932,6 +2160,21 @@ footer{
 
 <div class="overlay contact-overlay" id="ov-contact" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="contact-title">
   <button class="close" type="button" data-close>CLOSE</button>
+  <div class="mobile-overlay-header" aria-label="Overlay navigation">
+    <div class="mobile-overlay-header-main">
+      <button class="mobile-overlay-home" type="button" data-mobile-home aria-label="Return to homepage">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAB4CAMAAACQAMFAAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAABjUExURe/q59/c2VxdXdvY1vDs6ePf3cnGxNfT0uXh3uvm5KWko+Dd2ujk4b67u+nl4s7MyvHs6vDr6PHt6t7a2K+tre7q57+9u+7q5+Pf3efj4LOysPLu7Pbx7vfy8Pjz8Pjy7////3XM6ZEAAAAbdFJOU9mJAVL6mXBYyNUMp+cguyr25+55SPUm8pD7E7rz1xQAAAABYktHRCCzaz2AAAAAB3RJTUUH6gcGFSIPwaArogAAA+tJREFUWMOdmOuCoyAMRrEWx3rDVrqdXezu+7/lgvbyQUIc23/WHhE4TUKUctynOLw+5ZH9hVIz99FvsGJ/8APwaxdYv0HN3b/nwFPzAttdYNe/wGHXq3bmyTX1LnB8g+q+BzyWT7A/7xrRvUBz2QXO0xO04z7w5Vzp9oEvdXjj8mD7BKed4PDpiPXTuXYnqBrRuKyr87kXjcuPeDFP43aCo30Y1+0En85ljMuDcyUaJ4CTaJwAFuL+C6AWjdsGi91gLQRHERwaSVUBfMjKqyq4ej8bSdU8OF+NpKoArrLmVBXAVdacqsLirLKacT/4JakqgYs61QdgK6kqgYOkqgQuAVLnwS53a3Gu/QBcsvnwCWjyqgZzsmDI5jlVRfD4K5vHZTDIam4fgLPNR1UCOvxhESpHmPNRAEe80rGq6iqBuIptrGodzTcBr7hvQ6yq7gTwgm56WeHSRWD6qpcCJuUjK6g6FuKIEyyrtxxUvZYiWEFw8rLClM8lLg55VXzszTQnGL+UVvViYT9G28DN2sogvJwrDdwcRPBmYDlchVFV26sIYqyYLOhZGBn8hqsCw7E1kqs3g3ZqAP2E5RHx/9CCqqPdAPHtBo13NkBcyBrArt8CwTkFm3pqNkBMwZ36+x79sAGinkfc/y3wkIndOknOFMzkp0IescuCdhPkU6kP6/0og3zy9lWP2QD5csEfClLwkoAY9eFGT8BbAvZsnvGn9BT8nYAYLt6f4UDAawLySbj9AciqoykYXYbqli00pg0wVBpsaVMtoHM5MIzIObfUAyOmyACOLgI550LpYkZVXgE8uvb9nPCq3KEofG9vFdQSTrmhHKMRudo21HVWN2CVd9VCvA4gV6KEStJYfKZTE16e//BF0UCOdk75IeYI5MqwxwmtjMEiBjnnCtL3SsGeLzUnciYMoI5Bxjm//yYutO8cSJ3zSV0zYJ2A1LmL+R6Sw6QHmxSkrT9V3drkMBlAlYDUuU7N33RETDMLyJ6npuQU6kFMbAvIlsXhbNfEr4r/7AXknFv6dDgpD9oU5JxbDr5YaHkQp7SAnHPkiR6sCMg4txy0MOR6ELPM2h1l4tzSh8BE58GCgEyc02lvx4OagDoD/jpGYEtAJs6Rk7YHBwJaClbpSdupaA1XkDq3dhPwgR5UBKTOrZ3hKQJ77BGvYFxfLN+bdO5OmTMZkebWtblTxeCFgNS5tfepIzCa0AMk6gykDeVUSUFaz+kDHTGqax4gUacg/SufO+YfgBX2r/6t4DcDps6t+x+p4pRmwLSeG0nj686DaT3X0Y6ZUzUDprKu+49x1I94YsBU1nX/TQx2DJgGSE27wu4/UX5ow4Ku7LoAAAAASUVORK5CYII=" alt="" aria-hidden="true">
+      </button>
+      <div class="mobile-overlay-links">
+        <button type="button" data-overlay-switch="reels">REELS</button>
+        <button type="button" data-overlay-switch="team">TEAM</button>
+        <button type="button" data-overlay-switch="contact" aria-current="page">CONTACT</button>
+      </div>
+    </div>
+    <div class="mobile-overlay-close-row">
+      <button class="mobile-overlay-close" type="button" data-close>CLOSE</button>
+    </div>
+  </div>
   <div class="contact-shell">
     <div class="contact-intro">
       <span class="form-kicker">New business &amp; collaborations</span>
@@ -2011,6 +2254,21 @@ footer{
 
 <div class="overlay legal-overlay" id="ov-privacy" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="privacy-title">
   <button class="close" type="button" data-close>CLOSE</button>
+  <div class="mobile-overlay-header" aria-label="Overlay navigation">
+    <div class="mobile-overlay-header-main">
+      <button class="mobile-overlay-home" type="button" data-mobile-home aria-label="Return to homepage">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAB4CAMAAACQAMFAAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAABjUExURe/q59/c2VxdXdvY1vDs6ePf3cnGxNfT0uXh3uvm5KWko+Dd2ujk4b67u+nl4s7MyvHs6vDr6PHt6t7a2K+tre7q57+9u+7q5+Pf3efj4LOysPLu7Pbx7vfy8Pjz8Pjy7////3XM6ZEAAAAbdFJOU9mJAVL6mXBYyNUMp+cguyr25+55SPUm8pD7E7rz1xQAAAABYktHRCCzaz2AAAAAB3RJTUUH6gcGFSIPwaArogAAA+tJREFUWMOdmOuCoyAMRrEWx3rDVrqdXezu+7/lgvbyQUIc23/WHhE4TUKUctynOLw+5ZH9hVIz99FvsGJ/8APwaxdYv0HN3b/nwFPzAttdYNe/wGHXq3bmyTX1LnB8g+q+BzyWT7A/7xrRvUBz2QXO0xO04z7w5Vzp9oEvdXjj8mD7BKed4PDpiPXTuXYnqBrRuKyr87kXjcuPeDFP43aCo30Y1+0En85ljMuDcyUaJ4CTaJwAFuL+C6AWjdsGi91gLQRHERwaSVUBfMjKqyq4ej8bSdU8OF+NpKoArrLmVBXAVdacqsLirLKacT/4JakqgYs61QdgK6kqgYOkqgQuAVLnwS53a3Gu/QBcsvnwCWjyqgZzsmDI5jlVRfD4K5vHZTDIam4fgLPNR1UCOvxhESpHmPNRAEe80rGq6iqBuIptrGodzTcBr7hvQ6yq7gTwgm56WeHSRWD6qpcCJuUjK6g6FuKIEyyrtxxUvZYiWEFw8rLClM8lLg55VXzszTQnGL+UVvViYT9G28DN2sogvJwrDdwcRPBmYDlchVFV26sIYqyYLOhZGBn8hqsCw7E1kqs3g3ZqAP2E5RHx/9CCqqPdAPHtBo13NkBcyBrArt8CwTkFm3pqNkBMwZ36+x79sAGinkfc/y3wkIndOknOFMzkp0IescuCdhPkU6kP6/0og3zy9lWP2QD5csEfClLwkoAY9eFGT8BbAvZsnvGn9BT8nYAYLt6f4UDAawLySbj9AciqoykYXYbqli00pg0wVBpsaVMtoHM5MIzIObfUAyOmyACOLgI550LpYkZVXgE8uvb9nPCq3KEofG9vFdQSTrmhHKMRudo21HVWN2CVd9VCvA4gV6KEStJYfKZTE16e//BF0UCOdk75IeYI5MqwxwmtjMEiBjnnCtL3SsGeLzUnciYMoI5Bxjm//yYutO8cSJ3zSV0zYJ2A1LmL+R6Sw6QHmxSkrT9V3drkMBlAlYDUuU7N33RETDMLyJ6npuQU6kFMbAvIlsXhbNfEr4r/7AXknFv6dDgpD9oU5JxbDr5YaHkQp7SAnHPkiR6sCMg4txy0MOR6ELPM2h1l4tzSh8BE58GCgEyc02lvx4OagDoD/jpGYEtAJs6Rk7YHBwJaClbpSdupaA1XkDq3dhPwgR5UBKTOrZ3hKQJ77BGvYFxfLN+bdO5OmTMZkebWtblTxeCFgNS5tfepIzCa0AMk6gykDeVUSUFaz+kDHTGqax4gUacg/SufO+YfgBX2r/6t4DcDps6t+x+p4pRmwLSeG0nj686DaT3X0Y6ZUzUDprKu+49x1I94YsBU1nX/TQx2DJgGSE27wu4/UX5ow4Ku7LoAAAAASUVORK5CYII=" alt="" aria-hidden="true">
+      </button>
+      <div class="mobile-overlay-links">
+        <button type="button" data-overlay-switch="reels">REELS</button>
+        <button type="button" data-overlay-switch="team">TEAM</button>
+        <button type="button" data-overlay-switch="contact">CONTACT</button>
+      </div>
+    </div>
+    <div class="mobile-overlay-close-row">
+      <button class="mobile-overlay-close" type="button" data-close>CLOSE</button>
+    </div>
+  </div>
   <article class="legal-copy">
     <span class="form-kicker">Last updated July 21, 2026</span>
     <h2 id="privacy-title">Privacy Policy</h2>
@@ -2045,6 +2303,21 @@ footer{
 
 <div class="overlay legal-overlay" id="ov-terms" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="terms-title">
   <button class="close" type="button" data-close>CLOSE</button>
+  <div class="mobile-overlay-header" aria-label="Overlay navigation">
+    <div class="mobile-overlay-header-main">
+      <button class="mobile-overlay-home" type="button" data-mobile-home aria-label="Return to homepage">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAB4CAMAAACQAMFAAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAABjUExURe/q59/c2VxdXdvY1vDs6ePf3cnGxNfT0uXh3uvm5KWko+Dd2ujk4b67u+nl4s7MyvHs6vDr6PHt6t7a2K+tre7q57+9u+7q5+Pf3efj4LOysPLu7Pbx7vfy8Pjz8Pjy7////3XM6ZEAAAAbdFJOU9mJAVL6mXBYyNUMp+cguyr25+55SPUm8pD7E7rz1xQAAAABYktHRCCzaz2AAAAAB3RJTUUH6gcGFSIPwaArogAAA+tJREFUWMOdmOuCoyAMRrEWx3rDVrqdXezu+7/lgvbyQUIc23/WHhE4TUKUctynOLw+5ZH9hVIz99FvsGJ/8APwaxdYv0HN3b/nwFPzAttdYNe/wGHXq3bmyTX1LnB8g+q+BzyWT7A/7xrRvUBz2QXO0xO04z7w5Vzp9oEvdXjj8mD7BKed4PDpiPXTuXYnqBrRuKyr87kXjcuPeDFP43aCo30Y1+0En85ljMuDcyUaJ4CTaJwAFuL+C6AWjdsGi91gLQRHERwaSVUBfMjKqyq4ej8bSdU8OF+NpKoArrLmVBXAVdacqsLirLKacT/4JakqgYs61QdgK6kqgYOkqgQuAVLnwS53a3Gu/QBcsvnwCWjyqgZzsmDI5jlVRfD4K5vHZTDIam4fgLPNR1UCOvxhESpHmPNRAEe80rGq6iqBuIptrGodzTcBr7hvQ6yq7gTwgm56WeHSRWD6qpcCJuUjK6g6FuKIEyyrtxxUvZYiWEFw8rLClM8lLg55VXzszTQnGL+UVvViYT9G28DN2sogvJwrDdwcRPBmYDlchVFV26sIYqyYLOhZGBn8hqsCw7E1kqs3g3ZqAP2E5RHx/9CCqqPdAPHtBo13NkBcyBrArt8CwTkFm3pqNkBMwZ36+x79sAGinkfc/y3wkIndOknOFMzkp0IescuCdhPkU6kP6/0og3zy9lWP2QD5csEfClLwkoAY9eFGT8BbAvZsnvGn9BT8nYAYLt6f4UDAawLySbj9AciqoykYXYbqli00pg0wVBpsaVMtoHM5MIzIObfUAyOmyACOLgI550LpYkZVXgE8uvb9nPCq3KEofG9vFdQSTrmhHKMRudo21HVWN2CVd9VCvA4gV6KEStJYfKZTE16e//BF0UCOdk75IeYI5MqwxwmtjMEiBjnnCtL3SsGeLzUnciYMoI5Bxjm//yYutO8cSJ3zSV0zYJ2A1LmL+R6Sw6QHmxSkrT9V3drkMBlAlYDUuU7N33RETDMLyJ6npuQU6kFMbAvIlsXhbNfEr4r/7AXknFv6dDgpD9oU5JxbDr5YaHkQp7SAnHPkiR6sCMg4txy0MOR6ELPM2h1l4tzSh8BE58GCgEyc02lvx4OagDoD/jpGYEtAJs6Rk7YHBwJaClbpSdupaA1XkDq3dhPwgR5UBKTOrZ3hKQJ77BGvYFxfLN+bdO5OmTMZkebWtblTxeCFgNS5tfepIzCa0AMk6gykDeVUSUFaz+kDHTGqax4gUacg/SufO+YfgBX2r/6t4DcDps6t+x+p4pRmwLSeG0nj686DaT3X0Y6ZUzUDprKu+49x1I94YsBU1nX/TQx2DJgGSE27wu4/UX5ow4Ku7LoAAAAASUVORK5CYII=" alt="" aria-hidden="true">
+      </button>
+      <div class="mobile-overlay-links">
+        <button type="button" data-overlay-switch="reels">REELS</button>
+        <button type="button" data-overlay-switch="team">TEAM</button>
+        <button type="button" data-overlay-switch="contact">CONTACT</button>
+      </div>
+    </div>
+    <div class="mobile-overlay-close-row">
+      <button class="mobile-overlay-close" type="button" data-close>CLOSE</button>
+    </div>
+  </div>
   <article class="legal-copy">
     <span class="form-kicker">Last updated July 21, 2026</span>
     <h2 id="terms-title">Terms of Use</h2>
@@ -2623,6 +2896,43 @@ mm.add({
   gsap.from("footer .footer-cta",{y:50,opacity:0,duration:.8,ease:"power3.out",
     scrollTrigger:{trigger:"footer",start:"top 75%"}});
 });
+</script>
+
+<script>
+/* Mobile overlay-header navigation: switch overlays without stacking dialogs. */
+(function(){
+  document.querySelectorAll('[data-overlay-switch]').forEach(function(button){
+    button.addEventListener('click',function(){
+      var current=button.closest('.overlay');
+      var targetName=button.getAttribute('data-overlay-switch');
+      var targetId='ov-'+targetName;
+      if(current && current.id===targetId){
+        current.scrollTo({top:0,behavior:'smooth'});
+        return;
+      }
+      if(current){
+        current.style.visibility='hidden';
+        current.setAttribute('aria-hidden','true');
+      }
+      var trigger=document.querySelector('body > nav [data-overlay="'+targetName+'"]');
+      if(trigger && typeof openOverlay==='function') openOverlay(trigger);
+    });
+  });
+
+  document.querySelectorAll('[data-mobile-home]').forEach(function(button){
+    button.addEventListener('click',function(){
+      var current=button.closest('.overlay');
+      if(current){
+        current.style.visibility='hidden';
+        current.setAttribute('aria-hidden','true');
+      }
+      document.body.classList.remove('overlay-open');
+      window.scrollTo({top:0,behavior:'smooth'});
+      var home=document.getElementById('top');
+      if(home) home.focus && home.focus({preventScroll:true});
+    });
+  });
+})();
 </script>
 </body>
 </html>
