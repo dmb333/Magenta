@@ -1093,6 +1093,7 @@ nav{
 .hero-video-frame iframe{
   width:100%;height:100%;display:block;border:0;background:var(--black);
 }
+.hero-video-frame video,
 .hero-video-frame iframe{
   object-fit:contain;
 }
@@ -3027,15 +3028,17 @@ footer{
   <h1 class="sr-only">MAGENTA STUDIO — Human-Led AI Creative Production Studio</h1>
   <div class="hero-lockup" id="heroLockup">
     <div class="hero-video-frame" id="heroMark">
-      <iframe
+      <video
         id="heroStreamPlayer"
-        src="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e813897cd69ac3934cb0528ec58dc72e/iframe?poster=https%3A%2F%2Fcustomer-ezexebztyh5jp4ml.cloudflarestream.com%2Fe813897cd69ac3934cb0528ec58dc72e%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D1s%26height%3D600&autoplay=true&muted=true&loop=true"
         title="Magenta Studio sizzle reel"
-        loading="eager"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-        allowfullscreen
-      ></iframe>
+        poster="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e813897cd69ac3934cb0528ec58dc72e/thumbnails/thumbnail.jpg?time=1s&height=600"
+        autoplay
+        muted
+        loop
+        playsinline
+        controls
+        preload="auto"
+      ></video>
       <button class="hero-sound-toggle" id="heroSoundToggle" type="button" aria-pressed="false" aria-label="Turn on homepage reel sound">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 9v6h4l5 4V5L9 9H5z"></path>
@@ -3292,7 +3295,7 @@ footer{
   });
 </script>
 <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
-<script src="https://embed.cloudflarestream.com/embed/sdk.latest.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.16/dist/hls.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
@@ -3392,42 +3395,15 @@ document.querySelectorAll("[data-anchor]").forEach(a=>a.addEventListener("click"
 
 const overlayTriggers = new WeakMap();
 
-/* ---------------- homepage Stream sound + media coordination ---------------- */
-const heroStreamIframe=document.getElementById("heroStreamPlayer");
+/* ---------------- homepage Cloudflare HLS sound + media coordination ---------------- */
+const heroStreamVideo=document.getElementById("heroStreamPlayer");
 const heroSoundToggle=document.getElementById("heroSoundToggle");
 const heroSoundLabel=document.getElementById("heroSoundLabel");
 const heroVolumeHint=document.getElementById("heroVolumeHint");
-let heroStreamPlayer=null;
+const HERO_STREAM_MANIFEST="https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e813897cd69ac3934cb0528ec58dc72e/manifest/video.m3u8";
+let heroHls=null;
+let heroMediaInitialized=false;
 let heroVolumeHintTimer=null;
-
-/* Cloudflare's classic SDK exposes Stream as a global binding. Depending on
-   how the browser evaluates the SDK bundle, that binding is not guaranteed to
-   appear as window.Stream, so support both forms. */
-function getHeroStreamFactory(){
-  if(typeof Stream==="function") return Stream;
-  if(typeof window.Stream==="function") return window.Stream;
-  return null;
-}
-
-function initHeroStreamPlayer(){
-  if(heroStreamPlayer || !heroStreamIframe) return heroStreamPlayer;
-  const streamFactory=getHeroStreamFactory();
-  if(!streamFactory) return null;
-
-  try{
-    heroStreamPlayer=streamFactory(heroStreamIframe);
-    heroStreamPlayer.volume=.18;
-    heroStreamPlayer.muted=true;
-    heroStreamPlayer.addEventListener("volumechange",()=>{
-      const soundOn=!heroStreamPlayer.muted && heroStreamPlayer.volume>0;
-      setHeroSoundUI(soundOn);
-    });
-  }catch(error){
-    heroStreamPlayer=null;
-    console.warn("Homepage Stream player could not initialize.",error);
-  }
-  return heroStreamPlayer;
-}
 
 function setHeroSoundUI(soundOn){
   if(!heroSoundToggle || !heroSoundLabel) return;
@@ -3449,49 +3425,62 @@ function hideHeroVolumeHint(){
   heroVolumeHint?.classList.remove("is-visible");
 }
 
-/* Hard fallback for browsers or blockers that prevent the Cloudflare SDK from
-   loading. Reloading the iframe without autoplay immediately terminates any
-   audio, even though the player is cross-origin. */
-function forceHeroIframePausedMuted(){
-  if(!heroStreamIframe) return;
-  try{
-    const url=new URL(heroStreamIframe.src,window.location.href);
-    url.searchParams.delete("autoplay");
-    url.searchParams.set("muted","true");
-    url.searchParams.set("loop","true");
-    heroStreamIframe.src=url.toString();
-    heroStreamPlayer=null;
-  }catch(error){
-    console.warn("Homepage reel fallback pause failed.",error);
-  }
+function tryHeroMutedAutoplay(){
+  if(!heroStreamVideo || document.hidden || document.body.classList.contains("overlay-open")) return;
+  heroStreamVideo.volume=.18;
+  heroStreamVideo.muted=true;
+  const attempt=heroStreamVideo.play();
+  if(attempt && typeof attempt.catch==="function") attempt.catch(()=>{});
+  setHeroSoundUI(false);
 }
 
-function forceHeroIframeAutoplayMuted(){
-  if(!heroStreamIframe) return;
-  try{
-    const url=new URL(heroStreamIframe.src,window.location.href);
-    url.searchParams.set("autoplay","true");
-    url.searchParams.set("muted","true");
-    url.searchParams.set("loop","true");
-    heroStreamIframe.src=url.toString();
-    heroStreamPlayer=null;
-  }catch(error){
-    console.warn("Homepage reel fallback resume failed.",error);
+function initializeHeroMedia(){
+  if(!heroStreamVideo || heroMediaInitialized) return;
+  heroMediaInitialized=true;
+  heroStreamVideo.volume=.18;
+  heroStreamVideo.muted=true;
+
+  if(heroStreamVideo.canPlayType("application/vnd.apple.mpegurl")){
+    heroStreamVideo.src=HERO_STREAM_MANIFEST;
+    if(heroStreamVideo.readyState>=1) tryHeroMutedAutoplay();
+    else heroStreamVideo.addEventListener("loadedmetadata",tryHeroMutedAutoplay,{once:true});
+  }else if(window.Hls && Hls.isSupported()){
+    heroHls=new Hls({
+      enableWorker:true,
+      startLevel:-1,
+      capLevelToPlayerSize:true
+    });
+    heroHls.loadSource(HERO_STREAM_MANIFEST);
+    heroHls.attachMedia(heroStreamVideo);
+    heroHls.on(Hls.Events.MANIFEST_PARSED,tryHeroMutedAutoplay);
+    heroHls.on(Hls.Events.ERROR,(_event,data)=>{
+      if(!data?.fatal) return;
+      if(data.type===Hls.ErrorTypes.NETWORK_ERROR){
+        heroHls.startLoad();
+      }else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
+        heroHls.recoverMediaError();
+      }else{
+        heroHls.destroy();
+        heroHls=null;
+      }
+    });
+  }else{
+    heroMediaInitialized=false;
+    heroSoundToggle?.setAttribute("disabled","");
+    if(heroSoundLabel) heroSoundLabel.textContent="Sound unavailable";
+    console.warn("This browser cannot play the homepage HLS stream.");
+    return;
   }
+
+  heroStreamVideo.addEventListener("volumechange",()=>{
+    setHeroSoundUI(!heroStreamVideo.muted && heroStreamVideo.volume>0);
+  });
 }
 
 function pauseHeroReel(){
-  const player=initHeroStreamPlayer();
-  if(player){
-    try{
-      player.muted=true;
-      player.pause();
-    }catch(error){
-      forceHeroIframePausedMuted();
-    }
-  }else{
-    forceHeroIframePausedMuted();
-  }
+  if(!heroStreamVideo) return;
+  heroStreamVideo.muted=true;
+  heroStreamVideo.pause();
   setHeroSoundUI(false);
   hideHeroVolumeHint();
 }
@@ -3504,74 +3493,43 @@ function heroIsVisible(){
 }
 
 function resumeHeroReelMutedIfVisible(){
-  if(document.hidden || document.body.classList.contains("overlay-open") || !heroIsVisible()) return;
-  const player=initHeroStreamPlayer();
-  if(player){
-    try{
-      player.volume=.18;
-      player.muted=true;
-      const attempt=player.play();
-      if(attempt && typeof attempt.catch==="function") attempt.catch(()=>{});
-    }catch(error){
-      forceHeroIframeAutoplayMuted();
-    }
-  }else{
-    forceHeroIframeAutoplayMuted();
-  }
-  setHeroSoundUI(false);
+  if(!heroStreamVideo || document.hidden || document.body.classList.contains("overlay-open") || !heroIsVisible()) return;
+  initializeHeroMedia();
+  tryHeroMutedAutoplay();
 }
 
 heroSoundToggle?.addEventListener("click",()=>{
-  const player=initHeroStreamPlayer();
-  if(!player){
-    /* Do not fail silently. The control remains usable once the SDK finishes
-       loading, and the label briefly explains what is happening. */
-    heroSoundLabel.textContent="Loading…";
-    setTimeout(()=>{
-      const retryPlayer=initHeroStreamPlayer();
-      if(!retryPlayer){
-        setHeroSoundUI(false);
-        return;
-      }
-      retryPlayer.volume=.18;
-      retryPlayer.muted=false;
-      const attempt=retryPlayer.play();
-      if(attempt && typeof attempt.catch==="function") attempt.catch(()=>{});
-      setHeroSoundUI(true);
-      showHeroVolumeHint();
-    },120);
-    return;
-  }
+  initializeHeroMedia();
+  if(!heroStreamVideo) return;
 
   const turnSoundOn=heroSoundToggle.getAttribute("aria-pressed")!=="true";
-  try{
-    if(turnSoundOn){
-      player.volume=.18;
-      player.muted=false;
-      const attempt=player.play();
-      if(attempt && typeof attempt.catch==="function"){
-        attempt.catch(error=>console.warn("Homepage reel play request was rejected.",error));
-      }
-      setHeroSoundUI(true);
-      showHeroVolumeHint();
-    }else{
-      player.muted=true;
-      setHeroSoundUI(false);
-      hideHeroVolumeHint();
+  heroStreamVideo.volume=.18;
+  heroStreamVideo.muted=!turnSoundOn;
+
+  if(turnSoundOn){
+    const attempt=heroStreamVideo.play();
+    if(attempt && typeof attempt.catch==="function"){
+      attempt.catch(error=>{
+        heroStreamVideo.muted=true;
+        setHeroSoundUI(false);
+        console.warn("Homepage reel play request was rejected.",error);
+      });
     }
-  }catch(error){
-    player.muted=true;
+    setHeroSoundUI(true);
+    showHeroVolumeHint();
+  }else{
     setHeroSoundUI(false);
-    console.warn("Homepage sound control failed.",error);
+    hideHeroVolumeHint();
   }
 });
 
-window.addEventListener("load",()=>{
-  initHeroStreamPlayer();
-  /* A brief retry covers slow or privacy-filtered third-party script loading. */
-  setTimeout(initHeroStreamPlayer,500);
-},{once:true});
+document.addEventListener("click",event=>{
+  const target=event.target.closest?.("[data-overlay],[data-overlay-switch]");
+  if(target) pauseHeroReel();
+},true);
 
+window.addEventListener("load",initializeHeroMedia,{once:true});
+window.addEventListener("pagehide",pauseHeroReel);
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden) pauseHeroReel();
   else resumeHeroReelMutedIfVisible();
@@ -3665,6 +3623,7 @@ const reelPlayerTitle=reelPlayerModal?.querySelector("#reel-player-title");
 let activeReelTrigger=null;
 
 function openReelPlayer(trigger){
+  pauseHeroReel();
   if(!reelPlayerModal || !reelPlayerFrame || !reelPlayerTitle) return;
   activeReelTrigger=trigger;
   reelPlayerTitle.textContent=trigger.dataset.reelTitle || "Reel";
