@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://magentastudio.ai/</loc>
+    <lastmod>2026-07-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://magentastudio.ai/social-share.png</image:loc>
+      <image:title>MAGENTA STUDIO</image:title>
+      <image:caption>MAGENTA STUDIO — human-led AI creative production.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://magentastudio.ai/Magenta_Square_Logo_300x300.png</image:loc>
+      <image:title>MAGENTA STUDIO logo</image:title>
+    </image:image>
+    <video:video>
+      <video:thumbnail_loc>https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e813897cd69ac3934cb0528ec58dc72e/thumbnails/thumbnail.jpg?time=1s&amp;height=600</video:thumbnail_loc>
+      <video:title>MAGENTA STUDIO Reel</video:title>
+      <video:description>A selection of MAGENTA STUDIO work across human-led AI production, commercials, music videos, television, branded content, and original creative projects.</video:description>
+      <video:player_loc allow_embed="yes">https://customer-ezexebztyh5jp4ml.cloudflarestream.com/e813897cd69ac3934cb0528ec58dc72e/iframe</video:player_loc>
+      <video:duration>80</video:duration>
+      <video:publication_date>2026-07-30T00:00:00-04:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+</urlset>
