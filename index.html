@@ -2195,6 +2195,24 @@ footer{
 
 
 
+/* ---------- responsive chapter title clearance ---------- */
+/* Keep a protected visual gap between the settled chapter title and body copy
+   at every viewport size. The title morph still targets the same reserved slot;
+   this only increases the space below that slot so longer copy cannot crowd it. */
+.sec-copy{
+  --chapter-title-body-gap:clamp(34px,3.4vh,58px) !important;
+}
+@media (max-width:768px){
+  .sec-copy{
+    --chapter-title-body-gap:clamp(26px,3.2svh,38px) !important;
+  }
+}
+@media (min-width:769px) and (max-height:820px){
+  .sec-copy{
+    --chapter-title-body-gap:clamp(28px,3.8vh,42px) !important;
+  }
+}
+
 /* ---------- final chapter title order safeguard ---------- */
 .sec-copy .eyebrow-slot{order:0;}
 .sec-copy p{order:1;}
@@ -3849,7 +3867,7 @@ mm.add({
         .to(titleSlot,{opacity:1,duration:.045,ease:"none"},titleHandoffAt);
     }
 
-    const bodyInAt = useDesktopTitleLockup ? (isFinalDivisions ? .24 : .31) : (mobile ? .34 : .25);
+    const bodyInAt = useDesktopTitleLockup ? (isFinalDivisions ? .24 : .31) : (mobile ? .56 : .31);
     tl.to(bodyCopy,{y:0,opacity:1,duration:mobile ? .16 : .11,ease:"power2.out"},bodyInAt);
 
     /* Hold the completed section almost to the handoff. The following
